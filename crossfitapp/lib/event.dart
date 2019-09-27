@@ -6,19 +6,36 @@ class Event{
   final DateTime startAt;
   final DateTime endAt;
 
-  int timeslotId;
-  int totalAttendees;
-  int maxAttendees;
+  int timeslotId = 1;
+  int totalAttendees = 5;
+  int maxAttendees = 15;
 
 
 
-  static List<Event> getTestData() {
+  static Map<DateTime, Map<DateTime, List<Event>>> getTestData() {
     DateTime now = DateTime.now();
-    return [
-      Event(startAt: now.add(Duration(hours: 0)), endAt: now.add(Duration(hours: 1)), name:"Open Box"),
-      Event(startAt: now.add(Duration(hours: 2)), endAt: now.add(Duration(hours: 3)), name:"Conditionning"),
-      Event(startAt: now.add(Duration(hours: 4)), endAt: now.add(Duration(hours: 5)), name:"WOD"),
-    ];
+    now = new DateTime(now.year, now.month, now.day, 8, 0, 0, 0, 0);
+    return {
+      now.add(Duration(days: 0)) : {
+        now.add(Duration(hours: 0)) : [
+          Event(startAt: now.add(Duration(hours: 0)), endAt: now.add(Duration(hours: 1)), name:"Open Box"),
+          Event(startAt: now.add(Duration(hours: 0)), endAt: now.add(Duration(hours: 1)), name:"Conditionning"),
+        ],
+        now.add(Duration(hours: 1)) : [
+          Event(startAt: now.add(Duration(hours: 1)), endAt: now.add(Duration(hours: 2)), name:"Open Box"),
+          Event(startAt: now.add(Duration(hours: 1)), endAt: now.add(Duration(hours: 2)), name:"WOD"),
+        ],
+        now.add(Duration(hours: 2)) : [
+          Event(startAt: now.add(Duration(hours: 2)), endAt: now.add(Duration(hours: 3)), name:"Open Box"),
+        ],
+        now.add(Duration(hours: 3)) : [
+          Event(startAt: now.add(Duration(hours: 2)), endAt: now.add(Duration(hours: 3)), name:"Open Box"),
+        ],
+        now.add(Duration(hours: 4, minutes: 30)) : [
+          Event(startAt: now.add(Duration(hours: 4)), endAt: now.add(Duration(hours: 5)), name:"Conditionning"),
+        ],
+      }
+    };
   }
 }
 
