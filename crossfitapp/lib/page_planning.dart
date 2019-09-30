@@ -4,62 +4,106 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
-class PlanningPage extends StatefulWidget {
+class PlanningPage extends StatelessWidget {
   PlanningPage({Key key, this.title}) : super(key: key);
 
   final String title;
+  final DateFormat dayFormat = DateFormat("'Planning du ' EEEE dd MMMM");
+  final DateFormat hourFormat = DateFormat("HH:mm");
 
-  @override
-  _PlanningPageState createState() => _PlanningPageState();
-}
-
-class _PlanningPageState extends State<PlanningPage> {
-
-
-  List<DateTime> days = Event.getTestData().keys.toList();
+  final DateTime day = DateTime.now();
+  final List<DateTime> days = Event.getTestData().keys.toList();
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(widget.title),
-        ),
-        body: ListView.builder(
-          itemCount: days.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _WidgetPlanningDay(days[index], Event.getTestData()[days[index]]);
-            /*
-            return InkWell(
-              child: Card(
-                child: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          events[index].name,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 5.0,
-                        ),
-                      ],
-                    ),
-                  )
-                ),                
-                onTap: (){                  
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PrepareBookingPage(event: events[index]))
-                  );
-                }
-            );*/
-          },
+        body: buildCustomScrollView(),
+        bottomNavigationBar: BottomNavigationBar(
+          items: [
+            new BottomNavigationBarItem(
+              icon: Icon(Icons.event),
+              title: Text('Planning'),
+            ),
+            new BottomNavigationBarItem(
+              icon: Icon(Icons.trending_up),
+              title: Text('Activités'),
+            )
+          ],
         ),
       ),
+    );
+  }
+
+  CustomScrollView buildCustomScrollView() {
+    return CustomScrollView(
+        slivers: <Widget>[
+          // Add the app bar to the CustomScrollView.
+          SliverAppBar(
+            // Provide a standard title.
+            title: Text(dayFormat.format(day) ),
+            // Allows the user to reveal the app bar if they begin scrolling
+            // back up the list of items.
+            floating: true,
+            // Display a placeholder widget to visualize the shrinking size.
+            flexibleSpace: Placeholder(),
+            // Make the initial height of the SliverAppBar larger than normal.
+            expandedHeight: 100,
+          ),
+          // Next, create a SliverList
+          SliverList(
+            // Use a delegate to build items as they're scrolled on screen.
+            delegate: SliverChildBuilderDelegate(
+              // The builder function returns a ListTile with a title that
+              // displays the index of the current item.
+              (context, index) => ListTile(title: Card( child: Text('Item #$index'))),
+              // Builds 1000 ListTiles
+              childCount: 1000,
+            ),
+          ),
+        ],
+      );
+  }
+
+  ListView buildListViewHours(DateTime day) {
+    List<DateTime> hours = Event.getTestData()[day].keys.toList();
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: 8.0,
+          ),
+          child: buildListViewEvents(day, hours[index]),
+        );
+      },
+      itemCount: hours.length,
+      shrinkWrap: true, // todo comment this out and check the result
+      physics: ClampingScrollPhysics(), // todo comment this out and check the result
+    );
+  }
+  
+  Widget buildListViewEvents(DateTime day, DateTime hour) {
+    List<Event> events = Event.getTestData()[day][hour];
+    return Row(
+      children: <Widget>[
+        ListView.builder(
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Card(
+                child : Text(events[index].name)
+              ),
+            );
+          },
+          itemCount: events.length,
+          shrinkWrap: true, // todo comment this out and check the result
+          physics: ClampingScrollPhysics(), // todo comment this out and check the result
+        ),
+      ],
     );
   }
 }
@@ -67,19 +111,11 @@ class _PlanningPageState extends State<PlanningPage> {
 class WidgetPlanningDay {
 }
 
-class _WidgetPlanningDay extends StatefulWidget {
+class _WidgetPlanningDay extends StatelessWidget {
   _WidgetPlanningDay(this.date, this.eventsByHour);
 
   final DateTime date;
   final Map<DateTime, List<Event>> eventsByHour;
-
-  @override
-  __WidgetPlanningDayState createState() => __WidgetPlanningDayState();
-}
-
-class __WidgetPlanningDayState extends State<_WidgetPlanningDay> {
-
-  DateFormat dayFormat = DateFormat("EEEE dd MMM");
 
   @override
   Widget build(BuildContext context) {
@@ -87,11 +123,11 @@ class __WidgetPlanningDayState extends State<_WidgetPlanningDay> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListView(
         children: <Widget>[
-          Text(dayFormat.format(widget.date)),
+          //Text(dayFormat.format(date)),
           ListView.builder(
-            itemCount: widget.eventsByHour.length,
+            itemCount: eventsByHour.length,
             itemBuilder: (BuildContext context, int index){
-              return _WidgetPlanningHour(widget.eventsByHour[index]);
+              return _WidgetPlanningHour(eventsByHour[index]);
             },
           )
         ],
