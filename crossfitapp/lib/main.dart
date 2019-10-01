@@ -1,3 +1,4 @@
+import 'package:crossfitapp/event.dart';
 import 'package:crossfitapp/page_planning.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: PlanningPage(title: 'Planning'),
+      home: PlanningPage(title: 'Planning', startDate: Event.getToday(),),
     );
   }
 }

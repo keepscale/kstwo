@@ -11,12 +11,18 @@ class Event{
   int maxAttendees = 15;
 
 
+  static DateTime getToday(){    
+    DateTime now = DateTime.now();
+    DateTime today = new DateTime(now.year, now.month, now.day, 0, 0, 0, 0, 0);
+    return today;
+  }
+
 
   static Map<DateTime, Map<DateTime, List<Event>>> getTestData() {
-    DateTime now = DateTime.now();
-    now = new DateTime(now.year, now.month, now.day, 8, 0, 0, 0, 0);
+    DateTime today = getToday();
+    DateTime now = new DateTime(today.year, today.month, today.day, 8, 0, 0, 0, 0);
     return {
-      now.add(Duration(days: 0)) : {
+      today.add(Duration(days: 0)) : {
         now.add(Duration(hours: 0)) : [
           Event(startAt: now.add(Duration(hours: 0)), endAt: now.add(Duration(hours: 1)), name:"Open Box"),
           Event(startAt: now.add(Duration(hours: 0)), endAt: now.add(Duration(hours: 1)), name:"Conditionning"),
@@ -35,7 +41,7 @@ class Event{
           Event(startAt: now.add(Duration(hours: 4)), endAt: now.add(Duration(hours: 5)), name:"Conditionning"),
         ],
       },      
-      now.add(Duration(days: 1)) : {
+      today.add(Duration(days: 1)) : {
         now.add(Duration(days: 1, hours: 0)) : [
           Event(startAt: now.add(Duration(days: 1, hours: 0)), endAt: now.add(Duration(days: 1, hours: 1)), name:"Open Box"),
           Event(startAt: now.add(Duration(days: 1, hours: 0)), endAt: now.add(Duration(days: 1, hours: 1)), name:"Conditionning"),
@@ -45,7 +51,7 @@ class Event{
           Event(startAt: now.add(Duration(days: 1, hours: 1)), endAt: now.add(Duration(days: 1, hours: 2)), name:"WOD"),
         ],
       },      
-      now.add(Duration(days: 2)) : {
+      today.add(Duration(days: 2)) : {
         now.add(Duration(days: 2, hours: 0)) : [
           Event(startAt: now.add(Duration(days: 2, hours: 0)), endAt: now.add(Duration(days: 2, hours: 1)), name:"Open Box"),
           Event(startAt: now.add(Duration(days: 2, hours: 0)), endAt: now.add(Duration(days: 2, hours: 1)), name:"Conditionning"),
@@ -55,7 +61,7 @@ class Event{
           Event(startAt: now.add(Duration(days: 2, hours: 1)), endAt: now.add(Duration(days: 2, hours: 2)), name:"WOD"),
         ],
       },      
-      now.add(Duration(days: 3)) : {
+      today.add(Duration(days: 3)) : {
         now.add(Duration(days: 3, hours: 0)) : [
           Event(startAt: now.add(Duration(days: 3, hours: 0)), endAt: now.add(Duration(days: 3, hours: 1)), name:"Open Box"),
           Event(startAt: now.add(Duration(days: 3, hours: 0)), endAt: now.add(Duration(days: 3, hours: 1)), name:"Conditionning"),
