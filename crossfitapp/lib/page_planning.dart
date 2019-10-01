@@ -1,7 +1,9 @@
 
 import 'package:crossfitapp/event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix1;
 import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart' as prefix0;
 import 'package:intl/intl.dart';
 
 class PlanningPage extends StatefulWidget {
@@ -52,7 +54,7 @@ class _PlanningPageState extends State<PlanningPage> {
           onPageChanged: (index) => _onPageChanged(index),
           itemCount: Event.getTestData().keys.length,
           itemBuilder: (context, index){
-            return buildCustomScrollView(index);
+            return buildCustomScrollView();
           },
         ),
         bottomNavigationBar: BottomNavigationBar(
@@ -71,30 +73,64 @@ class _PlanningPageState extends State<PlanningPage> {
     );
   }
 
-  Widget buildCustomScrollView(int index) {
+  Widget buildCustomScrollView() {
     Map<DateTime, List<Event>> eventsByHours = Event.getTestData()[_day];
     List<DateTime> hours = eventsByHours.keys.toList();
 
-    List<Event> events = eventsByHours[hours[index]];
-    List<Widget> list = events.map((event)=> Row(
-                  children: [Card(child: Text(event.name),)] ,
-                )).toList();
     return ListView.builder(
+      itemCount: hours.length,
       itemBuilder: (context, index){
-        return ListTile(
-          title: Card( 
-            child: Row(
+        return Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(hourFormat.format(hours[index])),
-                Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: list)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8.0,
+                  ),
+                  child: Text(
+                    hourFormat.format(hours[index])
+                  ),  
+                ),
+                Expanded(
+                  child: Container(
+                    child: ListView.builder(    
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: eventsByHours[hours[index]].length,
+                      itemBuilder: (BuildContext context, int index2) {
+                        var event = eventsByHours[hours[index]][index2];
+                        var rest = event.maxAttendees - event.totalAttendees;
+                        return Card(
+                          elevation: 2.0,
+                          child: Container(
+                            child: ListTile(
+                              contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                              leading: Container(
+                                padding: EdgeInsets.only(right: 12.0),
+                                decoration: new BoxDecoration(
+                                    border: new Border(
+                                        right: new BorderSide(width: 1.0, color: Colors.white24))),
+                                child: Icon(Icons.autorenew),
+                              ),
+                              title: Text(
+                                event.name,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+
+                              subtitle: Text("$rest places disponibles"),
+                              trailing:
+                                  Icon(Icons.keyboard_arrow_right, size: 30.0)),
+                          ),
+                        );
+                      }, 
+                      shrinkWrap: true,
+                    ), 
+                  )
+                ),
               ],
-            )
-          )
-        );
-      },
-      itemCount: eventsByHours.keys.toList().length,
+            );
+      }
     );
   }
 
