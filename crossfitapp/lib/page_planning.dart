@@ -1,15 +1,17 @@
 
 import 'package:crossfitapp/event.dart';
+import 'package:crossfitapp/model/user.dart';
 import 'package:crossfitapp/page_prepare_booking.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 class PlanningPage extends StatefulWidget {
-  PlanningPage({Key key, this.title, this.startDate}) : super(key: key);
+  PlanningPage({Key key, this.title, this.startDate, this.user}) : super(key: key);
 
   final String title;
   final DateTime startDate;
+  final User user;
 
   _PlanningPageState createState() => _PlanningPageState();
 }
@@ -47,6 +49,9 @@ class _PlanningPageState extends State<PlanningPage> {
         appBar: AppBar(
           title: Text(_title),
           centerTitle: true,
+          actions: <Widget>[
+            new Text(widget.user.firstname + " " + widget.user.lastname)
+          ],
         ),
         body: PageView.builder(
           controller: _pageController,
