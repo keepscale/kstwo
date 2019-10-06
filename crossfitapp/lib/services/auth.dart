@@ -10,7 +10,7 @@ class AuthService{
 
   static Future<User> account() async {
 
-    final response = await NetworkService.get("/account");
+    final response = await NetworkService.get("/api/account");
 
 
     if (response.statusCode == 200) {
@@ -27,7 +27,7 @@ class AuthService{
   static Future<bool> doLogin(String email, String password) async {
 
     return await NetworkService.postFormData(
-      "/authentication", 
+      "/api/authentication", 
       body: {
         "j_username": email,
         "j_password": password,

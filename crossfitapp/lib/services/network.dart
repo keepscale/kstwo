@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class NetworkService {
 
-  static final String base_path = "https://booking.crossfit-nancy.fr/api";
+  static final String base_path = "https://booking.crossfit-nancy.fr/";
 
   static Map<String, String> headers = {"content-type": "text/json"};
   static Map<String, String> cookies = {};
