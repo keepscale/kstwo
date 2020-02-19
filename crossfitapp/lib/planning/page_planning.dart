@@ -1,6 +1,5 @@
-
-import 'package:crossfitapp/event.dart';
-import 'package:crossfitapp/page_prepare_booking.dart';
+import 'package:crossfitapp/planning/event.dart';
+import 'package:crossfitapp/planning/page_prepare_booking.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -42,37 +41,17 @@ class _PlanningPageState extends State<PlanningPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(_title),
-          centerTitle: true,
-        ),
-        body: PageView.builder(
-          controller: _pageController,
-          onPageChanged: (index) => _onPageChanged(index),
-          itemCount: Event.getTestData().keys.length,
-          itemBuilder: (context, index){            
-            DateTime day = widget.startDate.add(Duration(days: index));
-            Map<DateTime, List<Event>> eventsByHours = Event.getTestData()[day];
-            List<DateTime> hours = eventsByHours.keys.toList();
+    return PageView.builder(
+      controller: _pageController,
+      onPageChanged: (index) => _onPageChanged(index),
+      itemCount: Event.getTestData().keys.length,
+      itemBuilder: (context, index){            
+        DateTime day = widget.startDate.add(Duration(days: index));
+        Map<DateTime, List<Event>> eventsByHours = Event.getTestData()[day];
+        List<DateTime> hours = eventsByHours.keys.toList();
 
-            return new DayEventsWidget(day: day, hours: hours, eventsByHours: eventsByHours);
-          },
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: [
-            new BottomNavigationBarItem(
-              icon: Icon(Icons.event),
-              title: Text('Planning'),
-            ),
-            new BottomNavigationBarItem(
-              icon: Icon(Icons.trending_up),
-              title: Text('Activités'),
-            )
-          ],
-        ),
-      ),
+        return new DayEventsWidget(day: day, hours: hours, eventsByHours: eventsByHours);
+      },
     );
   }
 }
@@ -88,7 +67,7 @@ class DayEventsWidget extends StatelessWidget {
   final DateTime day;
   final List<DateTime> hours;
   final Map<DateTime, List<Event>> eventsByHours;
-  final DateFormat hourFormat = DateFormat("HH:mm");
+  final DateFormat hourFormat = DateFormat("H:mm");
 
   @override
   Widget build(BuildContext context) {
@@ -100,15 +79,6 @@ class DayEventsWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              child: Text(
-                hourFormat.format(hours[index])
-              ),  
-            ),
             HourEventsWidget(events: eventsByHours[hour], hour: hour),
           ],
         );
@@ -118,7 +88,7 @@ class DayEventsWidget extends StatelessWidget {
 }
 
 class HourEventsWidget extends StatelessWidget {
-  const HourEventsWidget({
+  HourEventsWidget({
     Key key,
     @required this.events,
     @required this.hour,
@@ -126,18 +96,33 @@ class HourEventsWidget extends StatelessWidget {
 
   final List<Event> events;
   final DateTime hour;
+  final DateFormat hourFormat = DateFormat("HH:mm");
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        child: ListView.builder(    
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: events.length,
-          itemBuilder: (BuildContext context, int index) {
-            return new EventWidget(event: events[index]);
-          }, 
-          shrinkWrap: true,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.only(
+                top: 15.0,
+                bottom: 2.0
+              ),
+              child:  Text(
+                hourFormat.format(hour),
+              )
+            ),
+            ListView.builder(    
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: events.length,
+              itemBuilder: (BuildContext context, int index) {
+                return new EventWidget(event: events[index]);
+              }, 
+              shrinkWrap: true,
+              )
+          ]
         ), 
       )
     );

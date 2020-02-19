@@ -1,5 +1,5 @@
 
-import 'package:crossfitapp/event.dart';
+import 'package:crossfitapp/planning/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -27,7 +27,7 @@ class PrepareBookingPage extends StatelessWidget {
                 title: Text(event.timeslottype.name),
                 subtitle: Text(dateFormat.format(event.startAt)),
               ),
-              ButtonTheme.bar( // make buttons use the appropriate styles for cards
+              ButtonBarTheme( // make buttons use the appropriate styles for cards
                 child: ButtonBar(
                   children: <Widget>[
                     FlatButton(
@@ -35,7 +35,7 @@ class PrepareBookingPage extends StatelessWidget {
                       onPressed: () { /* ... */ },
                     )
                   ],
-                ),
+                ), data: null,
               ),
             ]
           )
