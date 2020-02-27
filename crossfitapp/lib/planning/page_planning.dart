@@ -1,14 +1,18 @@
+import 'package:crossfitapp/model/user.dart';
 import 'package:crossfitapp/planning/event.dart';
 import 'package:crossfitapp/planning/page_prepare_booking.dart';
+import 'package:crossfitapp/services/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 class PlanningPage extends StatefulWidget {
-  PlanningPage({Key key, this.title, this.startDate}) : super(key: key);
+  PlanningPage({Key key, this.title, this.startDate, this.user}) : super(key: key);
 
   final String title;
   final DateTime startDate;
+  final User user;
+
 
   _PlanningPageState createState() => _PlanningPageState();
 }
@@ -34,6 +38,9 @@ class _PlanningPageState extends State<PlanningPage> {
   }
 
   void _onPageChanged(int index){
+    
+    print(EventService.getEvents(widget.startDate));
+
     setState(() {
       _title = dayFormat.format(widget.startDate.add(new Duration(days: index)));
     });

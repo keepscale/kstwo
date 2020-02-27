@@ -2,26 +2,29 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class TimeSlotType{
   
 
-  const TimeSlotType({this.name, this.icon});
+  TimeSlotType({this.name, this.icon});
 
+  int id;
   final String name;
   final IconData icon;
 
 
-  static const TimeSlotType openbox = TimeSlotType(       name: "Open Box",       icon: Icons.child_friendly);
-  static const TimeSlotType conditionning = TimeSlotType( name: "Conditionning",  icon: Icons.whatshot);
-  static const TimeSlotType wod = TimeSlotType(           name: "WOD",            icon: Icons.chat_bubble);
-  static const TimeSlotType stamnia = TimeSlotType(       name: "Stamania",       icon: Icons.pool);
-  static const TimeSlotType weightlifting = TimeSlotType( name: "Weightlifting",  icon: Icons.trending_flat);
+  static TimeSlotType openbox = TimeSlotType(       name: "Open Box",       icon: Icons.child_friendly);
+  static TimeSlotType conditionning = TimeSlotType( name: "Conditionning",  icon: Icons.whatshot);
+  static TimeSlotType wod = TimeSlotType(           name: "WOD",            icon: Icons.chat_bubble);
+  static TimeSlotType stamnia = TimeSlotType(       name: "Stamania",       icon: Icons.pool);
+  static TimeSlotType weightlifting = TimeSlotType( name: "Weightlifting",  icon: Icons.trending_flat);
 }
 class Event{
 
   Event({this.startAt, this.endAt, this.timeslottype});
 
+  String title;
   final DateTime startAt;
   final DateTime endAt;
   final TimeSlotType timeslottype;
@@ -99,6 +102,20 @@ class Event{
         ],
       }
     };
+  }
+
+  static  DateFormat datetimeFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
+  static fromJson(data) {
+    return Event(
+      startAt: datetimeFormat.parse(data['start']),
+      endAt: datetimeFormat.parse(data['end']),
+      timeslottype: new TimeSlotType(
+        name: data['title'],
+        icon: Icons.email
+      )
+    );
+
   }
 }
 
