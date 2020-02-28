@@ -1,4 +1,3 @@
-
 import 'package:crossfitapp/common/main_widget.dart';
 import 'package:crossfitapp/login/login_widget.dart';
 import 'package:crossfitapp/model/user.dart';
@@ -19,23 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
       ),
-      home: loggedIn ? MainWidget(widgetOptions: [
-        new WidgetOption(
-          icon: Icon(Icons.event),
-          title: 'Planning',
-          body: PlanningPage(startDate: Event.getToday(),)
-        ),
-        new WidgetOption(
-          icon: Icon(Icons.trending_up),
-          title: 'Activités',
-          body: new Text("Httlo")
-        ),
-        new WidgetOption(
-          icon: Icon(Icons.account_circle),
-          title: 'Profile',
-          body: new Text("yopythyt")
-        )
-      ]) : LoginWidget(),
+      home: LandingPage(),
     );
   }
 }
@@ -53,33 +36,46 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
 
-    if (this.user != null)
-      return PlanningPage(title: 'Planning', startDate: Event.getToday(), user: user);
-    else
-      return FutureBuilder<User>(
-        future: AuthService.account(), // a previously-obtained Future<String> or null
-        builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-              return Text('Press button to start.');
-            case ConnectionState.active:
-            case ConnectionState.waiting:
-              return CircularProgressIndicator();
-            case ConnectionState.done:
-              if (snapshot.hasError)
-                return Text('Error: ${snapshot.error}');
-              if (snapshot.data == null){
-                return LoginPage(onLoginSucess: (){
-                  setState(() {});
-                });
-              }
-              else{
-                this.user = snapshot.data;
-                return PlanningPage(title: 'Planning', startDate: Event.getToday(), user: user);
-              }
-          }
-          return null; // unreachable
+    return FutureBuilder<User>(
+      future: AuthService.account(), // a previously-obtained Future<String> or null
+      builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+            return Text('Press button to start.');
+          case ConnectionState.active:
+          case ConnectionState.waiting:
+            return CircularProgressIndicator(strokeWidth: 5,);
+          case ConnectionState.done:
+            if (snapshot.hasError)
+              return Text('Error: ${snapshot.error}');
+            if (snapshot.data == null){
+              return LoginWidget(onLoginSucess: (){
+                setState(() {});
+              });
+            }
+            else{
+              this.user = snapshot.data;
+              return MainWidget(widgetOptions: [
+                new WidgetOption(
+                  icon: Icon(Icons.event),
+                  title: 'Planning',
+                  body: PlanningPage(startDate: Event.getToday(), user: user)
+                ),
+                new WidgetOption(
+                  icon: Icon(Icons.trending_up),
+                  title: 'Activités',
+                  body: new Text("Httlo")
+                ),
+                new WidgetOption(
+                  icon: Icon(Icons.account_circle),
+                  title: 'Profile',
+                  body: new Text("yopythyt")
+                )
+              ]);
+            }
         }
-      );
+        return null; // unreachable
+      }
+    );
   }
 }

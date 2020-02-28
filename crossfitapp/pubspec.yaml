@@ -25,6 +25,8 @@ dependencies:
   cupertino_icons: ^0.1.2
   intl: ^0.16.1
   http: ^0.12.0+4
+  collection: ^1.14.11
+  enum_to_string: ^1.0.9
 
 dev_dependencies:
   flutter_test:

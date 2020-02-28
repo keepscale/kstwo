@@ -1,5 +1,7 @@
 
 
+import 'package:crossfitapp/common/hexcolor.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -20,17 +22,29 @@ class TimeSlotType{
   static TimeSlotType stamnia = TimeSlotType(       name: "Stamania",       icon: Icons.pool);
   static TimeSlotType weightlifting = TimeSlotType( name: "Weightlifting",  icon: Icons.trending_flat);
 }
+
+enum EventType { 
+   FULL, 
+   BOOKABLE, 
+   BOOKED, 
+   PAST,
+   EXCLUSION,
+   CLOSED_DAY 
+}
+
 class Event{
 
   Event({this.startAt, this.endAt, this.timeslottype});
+
 
   String title;
   final DateTime startAt;
   final DateTime endAt;
   final TimeSlotType timeslottype;
-
-  int totalAttendees = 5;
-  int maxAttendees = 15;
+  EventType type;
+  Color color;
+  int totalAttendees;
+  int maxAttendees;
 
 
   static DateTime getToday(){    
@@ -106,16 +120,21 @@ class Event{
 
   static  DateFormat datetimeFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-  static fromJson(data) {
-    return Event(
+  static Event fromJson(data, type, color) {
+    Event e = Event(
       startAt: datetimeFormat.parse(data['start']),
       endAt: datetimeFormat.parse(data['end']),
       timeslottype: new TimeSlotType(
-        name: data['title'],
+        name: data['type'],
         icon: Icons.email
       )
     );
-
+    e.title = data["name"];
+    e.totalAttendees = data["totalAttendees"];
+    e.maxAttendees = data["maxAttendees"];
+    e.type = EnumToString.fromString(EventType.values, type);
+    e.color = HexColor(color);
+    return e;
   }
 }
 

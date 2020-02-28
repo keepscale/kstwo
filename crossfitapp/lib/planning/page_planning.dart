@@ -1,10 +1,15 @@
+
+import 'dart:collection';
+
 import 'package:crossfitapp/model/user.dart';
+import 'package:crossfitapp/services/event.dart';
 import 'package:crossfitapp/planning/event.dart';
 import 'package:crossfitapp/planning/page_prepare_booking.dart';
-import 'package:crossfitapp/services/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import "package:collection/collection.dart";
+
 
 class PlanningPage extends StatefulWidget {
   PlanningPage({Key key, this.title, this.startDate, this.user}) : super(key: key);
@@ -20,15 +25,12 @@ class PlanningPage extends StatefulWidget {
 class _PlanningPageState extends State<PlanningPage> {
   PageController _pageController;
 
-  String _title;
-
   final DateFormat dayFormat = DateFormat("EEEE dd MMM");
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
-    _title = dayFormat.format(widget.startDate);
   }
   
   @override
@@ -38,12 +40,6 @@ class _PlanningPageState extends State<PlanningPage> {
   }
 
   void _onPageChanged(int index){
-    
-    print(EventService.getEvents(widget.startDate));
-
-    setState(() {
-      _title = dayFormat.format(widget.startDate.add(new Duration(days: index)));
-    });
   }
 
   @override
@@ -51,14 +47,31 @@ class _PlanningPageState extends State<PlanningPage> {
     return PageView.builder(
       controller: _pageController,
       onPageChanged: (index) => _onPageChanged(index),
-      itemCount: Event.getTestData().keys.length,
+      itemCount: 14,
       itemBuilder: (context, index){            
         DateTime day = widget.startDate.add(Duration(days: index));
-        Map<DateTime, List<Event>> eventsByHours = Event.getTestData()[day];
-        List<DateTime> hours = eventsByHours.keys.toList();
-
-        return new DayEventsWidget(day: day, hours: hours, eventsByHours: eventsByHours);
-      },
+        return FutureBuilder(
+          future: EventService.getEvents(day),
+          builder: (BuildContext context, AsyncSnapshot<List<Event>> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+                return Text('Press button to start.');
+              case ConnectionState.active:
+              case ConnectionState.waiting:
+                return CircularProgressIndicator(strokeWidth: 5,);
+              case ConnectionState.done:
+                if (snapshot.hasError)
+                  return Text('Error: ${snapshot.error}');
+                else{
+                  Map<DateTime, List<Event>> eventsByHours = SplayTreeMap();
+                  eventsByHours.addAll(groupBy(snapshot.data, (e)=>e.startAt));
+                  List<DateTime> hours = eventsByHours.keys.toList();
+                  return new DayEventsWidget(day: day, hours: hours, eventsByHours: eventsByHours);
+                }
+              }
+            }
+          );
+        },
     );
   }
 }
@@ -161,13 +174,13 @@ class EventWidget extends StatelessWidget {
               child: Icon(event.timeslottype.icon),
             ),
             title: Text(
-              event.timeslottype.name,
+              event.title,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
 
-            subtitle: Text("$rest places disponibles"),
-            trailing:
-                Icon(Icons.keyboard_arrow_right, size: 30.0)),
+            subtitle: Text("$rest places disponibles", style: TextStyle(color: event.color)),
+            trailing: event.type == EventType.BOOKED ? Icon(Icons.star, size: 30.0, color: Colors.yellowAccent,) : Icon(Icons.keyboard_arrow_right, size: 30.0)
+          ),
         ),
       ),                
       onTap: (){                  

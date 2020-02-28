@@ -59,7 +59,7 @@ class NetworkService {
   static Future<http.Response> get(String url) {
     return http.get(base_path + url, headers: headers).then((http.Response response) {
 
-      print("GET " + url + "=>" + response.statusCode.toString());
+      print("GET " + url + " => " + response.statusCode.toString());
 
       _updateCookie(response);
 
@@ -72,7 +72,7 @@ class NetworkService {
         .post(base_path + url, body: body, headers: headers, encoding: encoding)
         .then((http.Response response) {
 
-      print("POST " + url + "=>" + response.statusCode.toString());
+      print("POST " + url + " => " + response.statusCode.toString());
 
       _updateCookie(response);
 
@@ -85,7 +85,7 @@ class NetworkService {
         .post(base_path + url, body: body, encoding: encoding)
         .then((http.Response response) {
 
-        print("POST " + url + "=>" + response.statusCode.toString());
+        print("POST " + url + " => " + response.statusCode.toString());
 
       _updateCookie(response);
 

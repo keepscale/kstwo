@@ -35,7 +35,7 @@ class PrepareBookingPage extends StatelessWidget {
                       onPressed: () { /* ... */ },
                     )
                   ],
-                ), data: null,
+                ), data: ButtonBarThemeData(),
               ),
             ]
           )

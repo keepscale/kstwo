@@ -6,7 +6,6 @@ import 'package:crossfitapp/services/network.dart';
 import 'package:http/http.dart' as http;
 
 
-
 class AuthService{
 
   static Future<User> account() async {

@@ -1,6 +1,7 @@
 import 'package:crossfitapp/services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 
 class LoginPage extends StatefulWidget {
@@ -13,7 +14,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  final TextEditingController _emailFilter = new TextEditingController();
+  final TextEditingController _emailFilter = new TextEditingController(text: "loic.gangloff@gmail.com");
   final TextEditingController _passwordFilter = new TextEditingController();
   String _email = "";
   String _password = "";
@@ -110,5 +111,18 @@ class _LoginPageState extends State<LoginPage> {
         widget.onLoginSucess();
       }
     });
+  }
+
+
+  Future<http.Response> doLogin() {
+    return http.post(
+      "https://booking.crossfit-nancy.fr/api/authentication", 
+      body: {
+        "j_username": _email,
+        "j_password": _password,
+        "remember-me": true,
+        "submit": "Login"
+      }
+    );
   }
 }
