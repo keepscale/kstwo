@@ -1,6 +1,7 @@
 
 import 'dart:collection';
 
+import 'package:crossfitapp/common/main_widget.dart';
 import 'package:crossfitapp/model/user.dart';
 import 'package:crossfitapp/services/event.dart';
 import 'package:crossfitapp/planning/event.dart';
@@ -39,14 +40,16 @@ class _PlanningPageState extends State<PlanningPage> {
     super.dispose();
   }
 
-  void _onPageChanged(int index){
+  void _onPageChanged(int index, BuildContext context){
+    DateTime day = widget.startDate.add(Duration(days: index));
+    MainInheritedWidget.of(context).setTitle(dayFormat.format(day));
   }
 
   @override
   Widget build(BuildContext context) {
     return PageView.builder(
       controller: _pageController,
-      onPageChanged: (index) => _onPageChanged(index),
+      onPageChanged: (index) => _onPageChanged(index, context),
       itemCount: 14,
       itemBuilder: (context, index){            
         DateTime day = widget.startDate.add(Duration(days: index));
@@ -58,7 +61,9 @@ class _PlanningPageState extends State<PlanningPage> {
                 return Text('Press button to start.');
               case ConnectionState.active:
               case ConnectionState.waiting:
-                return CircularProgressIndicator(strokeWidth: 5,);
+                return new Center(
+                  child: new CircularProgressIndicator(),
+                );
               case ConnectionState.done:
                 if (snapshot.hasError)
                   return Text('Error: ${snapshot.error}');

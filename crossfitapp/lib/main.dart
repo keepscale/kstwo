@@ -44,7 +44,9 @@ class _LandingPageState extends State<LandingPage> {
             return Text('Press button to start.');
           case ConnectionState.active:
           case ConnectionState.waiting:
-            return CircularProgressIndicator(strokeWidth: 5,);
+            return new Center(
+              child: new CircularProgressIndicator(),
+            );
           case ConnectionState.done:
             if (snapshot.hasError)
               return Text('Error: ${snapshot.error}');
