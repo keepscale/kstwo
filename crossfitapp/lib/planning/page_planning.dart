@@ -13,9 +13,8 @@ import "package:collection/collection.dart";
 
 
 class PlanningPage extends StatefulWidget {
-  PlanningPage({Key key, this.title, this.startDate, this.user}) : super(key: key);
+  PlanningPage({Key key, this.startDate, this.user}) : super(key: key);
 
-  final String title;
   final DateTime startDate;
   final User user;
 
@@ -32,6 +31,10 @@ class _PlanningPageState extends State<PlanningPage> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
+
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _onPageChanged(_pageController.page.toInt(), context);
+  });
   }
   
   @override
@@ -42,7 +45,7 @@ class _PlanningPageState extends State<PlanningPage> {
 
   void _onPageChanged(int index, BuildContext context){
     DateTime day = widget.startDate.add(Duration(days: index));
-    MainInheritedWidget.of(context).setTitle(dayFormat.format(day));
+    MainWidget.of(context).setTitle(dayFormat.format(day));
   }
 
   @override
@@ -55,7 +58,7 @@ class _PlanningPageState extends State<PlanningPage> {
         DateTime day = widget.startDate.add(Duration(days: index));
         return FutureBuilder(
           future: EventService.getEvents(day),
-          builder: (BuildContext context, AsyncSnapshot<List<Event>> snapshot) {
+          builder: (BuildContext context2, AsyncSnapshot<List<Event>> snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
                 return Text('Press button to start.');

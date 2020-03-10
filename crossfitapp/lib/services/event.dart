@@ -20,10 +20,12 @@ class EventService{
                   (databytype) => (databytype['events'] as List).map(
                     (dataevent) => Event.fromJson(dataevent, databytype["type"], databytype["color"])
                   )
-                  .where((event) => event.type != EventType.PAST &&  event.startAt.difference(date).inDays == 0)
+                  .where((event) => event.type != EventType.PAST)
                 ).toList();
 
-      return jsonData;
+      var eventToday = jsonData.where((event)=>event.startAt.difference(date).inDays == 0).toList();
+
+      return eventToday.length == 0 ? jsonData : eventToday;
     } 
     else {
       throw Exception('Failed to load post');

@@ -30,13 +30,14 @@ class _MainInherited extends InheritedWidget {
     return true;
   }
 }
-class MainInheritedWidget extends StatefulWidget  {
-  MainInheritedWidget({
+class MainWidget extends StatefulWidget  {
+  MainWidget({
     Key key,
-    @required this.child
+    @required this.widgetOptions
   }) : super(key: key);
   
-  final Widget child;
+  final List<WidgetOption> widgetOptions;
+  
 
   @override
   MainInheritedWidgetState createState() => MainInheritedWidgetState();
@@ -46,81 +47,49 @@ class MainInheritedWidget extends StatefulWidget  {
   }
 }
 
-class MainInheritedWidgetState extends State<MainInheritedWidget> {
+class MainInheritedWidgetState extends State<MainWidget> {
+  
+  int _selectedIndex = 0;
   String _title;
+  void initState(){
+    super.initState();
+    _title = widget.widgetOptions.elementAt(_selectedIndex).title;
+  }
   
   void setTitle(String title) {
     setState(() {
       _title = title;
     });
   }
- @override
-  Widget build(BuildContext context){
-    return new _MainInherited(
-      data: this,
-      child: widget.child,
-    );
-  }
-}
-
-class MainWidget extends StatefulWidget {
-  MainWidget({
-    Key key,
-    @required this.widgetOptions
-  }) : super(key: key);
-  
-  final List<WidgetOption> widgetOptions;
-
-  @override
-  _MainWidgetState createState() => new _MainWidgetState();
-}
-
-class _MainWidgetState extends State<MainWidget> {
-
-  int _selectedIndex = 0;
-
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _title = widget.widgetOptions.elementAt(_selectedIndex).title;
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-
+  Widget build(BuildContext context){
+    
     var opt = this.widget.widgetOptions.elementAt(_selectedIndex);
 
-    return new MainInheritedWidget(
-      child: new Scaffold(
-        appBar: new AppBar(
-          title: _AppBarTitle(opt.title),
-        ),
-        body: opt.body,
-        bottomNavigationBar: BottomNavigationBar(
-          items: this.widget.widgetOptions.map((w) => BottomNavigationBarItem(
-              icon: w.icon,
-              title: Text(w.title),
-            )).toList(),          
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-        ),
+    return  new Scaffold(
+      appBar: new AppBar(
+        title: Text(_title),
+      ),
+      body: new _MainInherited(
+        data: this,
+        child: opt.body
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: this.widget.widgetOptions.map((w) => BottomNavigationBarItem(
+            icon: w.icon,
+            title: Text(w.title),
+          )).toList(),          
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
-}
-
-class _AppBarTitle extends StatelessWidget{
-  _AppBarTitle(this.title);
-
-  String title;
-
-  @override
-  Widget build(BuildContext context) {
-
-     MainInheritedWidgetState state = MainInheritedWidget.of(context);
-     
-    return Text(state._title == null ? title : state._title);
-  }
-  
 }
