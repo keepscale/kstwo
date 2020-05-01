@@ -12,6 +12,7 @@ class NetworkProvider {
   Dio _dio;
   NetworkProvider(){
     _dio = new Dio(NetworkProvider.options);
+    _dio.interceptors.add(LogInterceptor());
   }
 
   Future<Response<T>> get<T>(String path, {Map<String, dynamic> queryParameters}){

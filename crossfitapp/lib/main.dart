@@ -1,68 +1,63 @@
-import 'package:crossfitapp/bloc/account_bloc.dart';
-import 'package:crossfitapp/common/main_widget.dart';
+import 'package:crossfitapp/common/app_store.dart';
 import 'package:crossfitapp/login/login_widget.dart';
-import 'package:crossfitapp/model/user.dart';
-import 'package:crossfitapp/planning/event.dart';
-import 'package:crossfitapp/planning/page_planning.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(App());
 
-class MyApp extends StatelessWidget {
-  bool loggedIn = false;
+class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-      ),
-      home: MainPage(),
-    );
+    return CrossfitApp();
   }
 }
 
-class MainPage extends StatefulWidget {
+class CrossfitApp extends StatefulWidget {
 
   @override
-  _MainPageState createState() => _MainPageState();
+  _CrossfitAppState createState() => _CrossfitAppState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _CrossfitAppState extends State<CrossfitApp> {
 
-  User user;
+  final appStore = AppStore();
 
   @override
   void initState() {
     super.initState();
-    accountBloc.getAccount();
+    appStore.fetchAccount();
   }
 
 
   @override
   Widget build(BuildContext context) {
+    return Observer(
+      builder: (_) {
+        return MaterialApp(
+          title: 'Flutter login UI',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: appStore.loggedIn ? Text("logged in") : LoginWidget(appStore: appStore),
+        );
+      }
+    );
+  }
+}
 
-    return StreamBuilder<User>(
-      stream: accountBloc.subject.stream, 
-      builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.none:
-            return Text('Press button to start.');
-          case ConnectionState.active:
-          case ConnectionState.waiting:
-            return new Center(
-              child: new CircularProgressIndicator(),
-            );
-          case ConnectionState.done:
-            if (snapshot.hasError)
-              return Text('Error: ${snapshot.error}');
-            if (snapshot.data == null){
-              return LoginWidget(onLoginSucess: (){
-                setState(() {});
-              });
-            }
-            else{
-              this.user = snapshot.data;
+/*
+class LoadingIndicator extends StatelessWidget {
+  const LoadingIndicator(this.appStore);
+
+  final App appStore;
+
+  @override
+  Widget build(BuildContext context) => Observer(
+      builder: (_) => appStore.user.status == FutureStatus.pending
+          ? const LinearProgressIndicator()
+          : Container());
+}
+
               return MainWidget(widgetOptions: [
                 new WidgetOption(
                   icon: Icon(Icons.event),
@@ -80,10 +75,4 @@ class _MainPageState extends State<MainPage> {
                   body: new Text("yopythyt")
                 )
               ]);
-            }
-        }
-        return null; // unreachable
-      }
-    );
-  }
-}
+              */

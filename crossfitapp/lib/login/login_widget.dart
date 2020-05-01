@@ -1,11 +1,11 @@
-import 'package:crossfitapp/services/auth.dart';
+import 'package:crossfitapp/common/app_store.dart';
 import 'package:flutter/material.dart';
 
 class LoginWidget extends StatefulWidget {
   
-  LoginWidget({Key key, this.onLoginSucess}) : super(key: key);
+  LoginWidget({Key key, this.appStore}) : super(key: key);
 
-  final Function() onLoginSucess;
+  final AppStore appStore;
 
   @override
   _LoginWidgetState createState() => _LoginWidgetState();
@@ -19,14 +19,7 @@ class _LoginWidgetState extends State<LoginWidget> {
   
 
   void onLoginPressed(){
-    AuthService.doLogin(emailController.text, passwordController.text).then((bool loggedIn){
-      if (!loggedIn){
-        print("Bad login or password");
-      }
-      else{
-        widget.onLoginSucess();
-      }
-    });
+    this.widget.appStore.login(emailController.text, passwordController.text);
   }
 
   @override
@@ -41,6 +34,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                Text(this.widget.appStore.user.status.toString()),
                 Icon(Icons.account_box),
                 SizedBox(height: 45.0),
                 TextField(controller: emailController,),

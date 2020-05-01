@@ -5,14 +5,14 @@ import 'package:crossfitapp/provider/network.dart';
 import 'package:dio/dio.dart';
 
 
-class AccountApiProvider{
+class AuthApiProvider{
 
   Future<User> account() async {
     Response<User> response = await network.get("/api/account");
     return response.data;
   }
 
-  void refreshToken({String email, String password}) async {
+  Future<Response> login({String email, String password}) async {
 
     Response response = await network.post(
       "/api/token", 
@@ -22,6 +22,7 @@ class AccountApiProvider{
       }
     );
 
+    return response;
   }
 
 }
