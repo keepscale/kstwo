@@ -1,5 +1,7 @@
+import 'package:crossfitapp/store/app_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 
 class WidgetOption {
@@ -16,80 +18,38 @@ class WidgetOption {
   final Widget body;
 
 }
-class _MainInherited extends InheritedWidget {
-  _MainInherited({
-    Key key,
-    @required Widget child,
-    @required this.data,
-  }) : super(key: key, child: child);
 
-  final MainInheritedWidgetState data;
-
-  @override
-  bool updateShouldNotify(_MainInherited oldWidget) {
-    return true;
-  }
-}
-class MainWidget extends StatefulWidget  {
-  MainWidget({
-    Key key,
-    @required this.widgetOptions
+class MainWidget extends StatelessWidget  {
+  MainWidget(this.appStore, this.widgetOptions, {
+    Key key
   }) : super(key: key);
   
   final List<WidgetOption> widgetOptions;
-  
-
-  @override
-  MainInheritedWidgetState createState() => MainInheritedWidgetState();
-
-  static MainInheritedWidgetState of(BuildContext context){
-    return (context.inheritFromWidgetOfExactType(_MainInherited) as _MainInherited).data;
-  }
-}
-
-class MainInheritedWidgetState extends State<MainWidget> {
-  
-  int _selectedIndex = 0;
-  String _title;
-  void initState(){
-    super.initState();
-    _title = widget.widgetOptions.elementAt(_selectedIndex).title;
-  }
-  
-  void setTitle(String title) {
-    setState(() {
-      _title = title;
-    });
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      _title = widget.widgetOptions.elementAt(_selectedIndex).title;
-    });
-  }
+  final AppStore appStore;
 
   @override
   Widget build(BuildContext context){
+    return Observer(builder: (_){
     
-    var opt = this.widget.widgetOptions.elementAt(_selectedIndex);
+      WidgetOption opt = widgetOptions.elementAt(appStore.selectedIndex);
 
-    return  new Scaffold(
-      appBar: new AppBar(
-        title: Text(_title),
-      ),
-      body: new _MainInherited(
-        data: this,
-        child: opt.body
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: this.widget.widgetOptions.map((w) => BottomNavigationBarItem(
-            icon: w.icon,
-            title: Text(w.title),
-          )).toList(),          
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
-    );
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(appStore.appBarTitle == null ? opt.title : appStore.appBarTitle),
+        ),
+        body: opt.body,
+        bottomNavigationBar: BottomNavigationBar(
+          items: widgetOptions.map((w) => BottomNavigationBarItem(
+              icon: w.icon,
+              title: Text(w.title),
+            )).toList(),          
+          currentIndex: appStore.selectedIndex,
+          onTap: (i){
+            appStore.setAppBatTitle(widgetOptions.elementAt(i).title);
+            appStore.selected(i);
+          },
+        ),
+      );
+    });
   }
 }

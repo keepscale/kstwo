@@ -8,7 +8,7 @@ class PrepareBookingPage extends StatelessWidget {
   PrepareBookingPage({Key key, this.event}) : super(key: key);
 
   final Event event;
-  final DateFormat dateFormat = DateFormat("EEEE dd 'à' HH:mm");
+  final DateFormat dateFormat = DateFormat("EEEEE dd 'à' HH:mm", "fr");
   
   @override
   Widget build(BuildContext context) {

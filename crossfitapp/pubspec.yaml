@@ -27,8 +27,11 @@ dependencies:
   collection: ^1.14.11
   enum_to_string: ^1.0.9
   dio: ^3.0.9
+
+  flutter_secure_storage: ^3.3.3
   
   mobx: ^1.1.1
+  provider: 4.0.5+1
   flutter_mobx: ^1.1.0
 
 dev_dependencies:

@@ -1,9 +1,10 @@
-import 'package:crossfitapp/common/app_store.dart';
+
+import 'package:crossfitapp/store/app_store.dart';
 import 'package:flutter/material.dart';
 
 class LoginWidget extends StatefulWidget {
   
-  LoginWidget({Key key, this.appStore}) : super(key: key);
+  LoginWidget(this.appStore, {Key key}) : super(key: key);
 
   final AppStore appStore;
 

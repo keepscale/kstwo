@@ -1,6 +1,6 @@
 
 import 'package:crossfitapp/model/user.dart';
-import 'package:crossfitapp/provider/auth_provider.dart';
+import 'package:crossfitapp/service/auth_service.dart';
 import 'package:mobx/mobx.dart';
 
 part 'app_store.g.dart';
@@ -9,7 +9,19 @@ class AppStore = _AppStore with _$AppStore;
 
 abstract class _AppStore with Store{
 
-  AuthApiProvider authApiProvider = AuthApiProvider();
+  final AuthService authService;
+  _AppStore(this.authService);
+
+  @observable 
+  String appBarTitle;
+
+  @observable
+  int selectedIndex = 0;
+  
+  @action
+  Future<void> selected(int newValue) async{
+    selectedIndex = newValue;
+  }
 
   @observable 
   ObservableFuture<User> user = noUser;
@@ -21,9 +33,14 @@ abstract class _AppStore with Store{
     && user.status == FutureStatus.fulfilled;
 
   @action
+  Future<void> setAppBatTitle(String title) async {
+    this.appBarTitle = title;
+  }
+
+  @action
   Future<User> fetchAccount() async {
     
-    final future = authApiProvider.account();
+    final future = authService.account();
     user = ObservableFuture(future);
 
     return await future;
@@ -32,9 +49,22 @@ abstract class _AppStore with Store{
   @action
   Future<User> login(String username, String password) async {
     
-    return authApiProvider
+    await authService.logout();
+
+    return authService
       .login(email: username, password: password)
       .then((response) => fetchAccount());
   }
+
+  @action
+  Future<User> logout() async {
+    
+    return authService
+      .logout()
+      .then((response) => fetchAccount());
+  }
+
+  
+
 
 }

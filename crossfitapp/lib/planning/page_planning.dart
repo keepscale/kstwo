@@ -3,20 +3,23 @@ import 'dart:collection';
 
 import 'package:crossfitapp/common/main_widget.dart';
 import 'package:crossfitapp/model/user.dart';
-import 'package:crossfitapp/services/event.dart';
 import 'package:crossfitapp/planning/event.dart';
 import 'package:crossfitapp/planning/page_prepare_booking.dart';
+import 'package:crossfitapp/service/event_service.dart';
+import 'package:crossfitapp/store/app_store.dart';
+import 'package:crossfitapp/store/planning_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import "package:collection/collection.dart";
+import 'package:provider/provider.dart';
 
 
 class PlanningPage extends StatefulWidget {
-  PlanningPage({Key key, this.startDate, this.user}) : super(key: key);
+  PlanningPage(this.planningStore, this.appStore, {Key key}) : super(key: key);
 
-  final DateTime startDate;
-  final User user;
+  final PlanningStore planningStore;
+  final AppStore appStore;
 
 
   _PlanningPageState createState() => _PlanningPageState();
@@ -25,16 +28,13 @@ class PlanningPage extends StatefulWidget {
 class _PlanningPageState extends State<PlanningPage> {
   PageController _pageController;
 
-  final DateFormat dayFormat = DateFormat("EEEE dd MMM");
+  final DateFormat dayFormat = DateFormat("EEEEE dd MMMM", "fr_FR");
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
-
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      _onPageChanged(_pageController.page.toInt(), context);
-  });
+    this.widget.planningStore.load();
   }
   
   @override
@@ -44,8 +44,9 @@ class _PlanningPageState extends State<PlanningPage> {
   }
 
   void _onPageChanged(int index, BuildContext context){
-    DateTime day = widget.startDate.add(Duration(days: index));
-    MainWidget.of(context).setTitle(dayFormat.format(day));
+    widget.planningStore.add(Duration(days: index));
+    widget.appStore.setAppBatTitle(
+      dayFormat.format(widget.planningStore.currenDate));
   }
 
   @override
@@ -54,32 +55,9 @@ class _PlanningPageState extends State<PlanningPage> {
       controller: _pageController,
       onPageChanged: (index) => _onPageChanged(index, context),
       itemCount: 14,
-      itemBuilder: (context, index){            
-        DateTime day = widget.startDate.add(Duration(days: index));
-        return FutureBuilder(
-          future: EventService.getEvents(day),
-          builder: (BuildContext context2, AsyncSnapshot<List<Event>> snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                return Text('Press button to start.');
-              case ConnectionState.active:
-              case ConnectionState.waiting:
-                return new Center(
-                  child: new CircularProgressIndicator(),
-                );
-              case ConnectionState.done:
-                if (snapshot.hasError)
-                  return Text('Error: ${snapshot.error}');
-                else{
-                  Map<DateTime, List<Event>> eventsByHours = SplayTreeMap();
-                  eventsByHours.addAll(groupBy(snapshot.data, (e)=>e.startAt));
-                  List<DateTime> hours = eventsByHours.keys.toList();
-                  return new DayEventsWidget(day: day, hours: hours, eventsByHours: eventsByHours);
-                }
-              }
-            }
-          );
-        },
+      itemBuilder: (context, index){  
+        return new DayEventsWidget(day: widget.planningStore.currenDate, eventsByHours: widget.planningStore.eventsByHours);
+      },
     );
   }
 }
@@ -88,17 +66,20 @@ class DayEventsWidget extends StatelessWidget {
   DayEventsWidget({
     Key key,
     @required this.day,
-    @required this.hours,
     @required this.eventsByHours,
-  }) : super(key: key);
+  }) : super(key: key){
+    this.hours = eventsByHours.keys.toList();
+  }
 
   final DateTime day;
-  final List<DateTime> hours;
   final Map<DateTime, List<Event>> eventsByHours;
+  List<DateTime> hours;
   final DateFormat hourFormat = DateFormat("H:mm");
 
   @override
   Widget build(BuildContext context) {
+    if (hours.isEmpty)
+      return Text("Aucun créneau disponible");
     return ListView.builder(
       itemCount: hours.length,
       itemBuilder: (context, index){
