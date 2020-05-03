@@ -37,6 +37,7 @@ class Event{
   Event({this.startAt, this.endAt, this.timeslottype});
 
 
+  int id;
   String title;
   final DateTime startAt;
   final DateTime endAt;
@@ -129,6 +130,7 @@ class Event{
         icon: Icons.email
       )
     );
+    e.id = data["id"];
     e.title = data["name"];
     e.totalAttendees = data["totalAttendees"];
     e.maxAttendees = data["maxAttendees"];

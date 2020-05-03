@@ -1,13 +1,17 @@
 
+import 'package:crossfitapp/planning/booking.dart';
 import 'package:crossfitapp/planning/event.dart';
+import 'package:crossfitapp/store/planning_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 class PrepareBookingPage extends StatelessWidget {
-  PrepareBookingPage({Key key, this.event}) : super(key: key);
+  PrepareBookingPage({Key key, this.event, this.booking, this.store}) : super(key: key);
 
   final Event event;
+  final Booking booking;
+  final PlanningPageStore store;
   final DateFormat dateFormat = DateFormat("EEEEE dd 'à' HH:mm", "fr");
   
   @override
@@ -32,7 +36,9 @@ class PrepareBookingPage extends StatelessWidget {
                   children: <Widget>[
                     FlatButton(
                       child: const Text("RESERVER"),
-                      onPressed: () { /* ... */ },
+                      onPressed: () { 
+                        Navigator.pop(context);
+                       },
                     )
                   ],
                 ), data: ButtonBarThemeData(),

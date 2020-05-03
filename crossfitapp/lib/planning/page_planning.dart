@@ -1,8 +1,4 @@
 
-import 'dart:collection';
-
-import 'package:crossfitapp/common/main_widget.dart';
-import 'package:crossfitapp/model/user.dart';
 import 'package:crossfitapp/planning/event.dart';
 import 'package:crossfitapp/planning/page_prepare_booking.dart';
 import 'package:crossfitapp/service/event_service.dart';
@@ -10,15 +6,14 @@ import 'package:crossfitapp/store/app_store.dart';
 import 'package:crossfitapp/store/planning_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
-import "package:collection/collection.dart";
 import 'package:provider/provider.dart';
 
 
 class PlanningPage extends StatefulWidget {
-  PlanningPage(this.planningStore, this.appStore, {Key key}) : super(key: key);
+  PlanningPage(this.appStore, {Key key}) : super(key: key);
 
-  final PlanningStore planningStore;
   final AppStore appStore;
 
 
@@ -34,7 +29,6 @@ class _PlanningPageState extends State<PlanningPage> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
-    this.widget.planningStore.load();
   }
   
   @override
@@ -44,9 +38,8 @@ class _PlanningPageState extends State<PlanningPage> {
   }
 
   void _onPageChanged(int index, BuildContext context){
-    widget.planningStore.add(Duration(days: index));
     widget.appStore.setAppBatTitle(
-      dayFormat.format(widget.planningStore.currenDate));
+      dayFormat.format(DateTime.now().add(Duration(days: index))));
   }
 
   @override
@@ -54,9 +47,39 @@ class _PlanningPageState extends State<PlanningPage> {
     return PageView.builder(
       controller: _pageController,
       onPageChanged: (index) => _onPageChanged(index, context),
-      itemCount: 14,
-      itemBuilder: (context, index){  
-        return new DayEventsWidget(day: widget.planningStore.currenDate, eventsByHours: widget.planningStore.eventsByHours);
+      itemCount: 14,      
+      itemBuilder: (context, index){
+        return Consumer<EventService>(
+          builder: (context, eventService, _){
+            return Provider(
+              create: (_){
+                var store = PlanningPageStore(eventService, DateTime.now().add(Duration(days: index)));
+                store.load();
+                return store;
+              },
+              child: Consumer<PlanningPageStore>(
+                builder: (context, planningPageStore, _){
+
+                  return RefreshIndicator(
+                    child: Observer(builder: (_){
+                    if (planningPageStore.isLoading)
+                      return Container(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        alignment: Alignment.topCenter,
+                        child: const CircularProgressIndicator()
+                      );
+                    else 
+                      return DayEventsWidget(store: planningPageStore);
+                  }), 
+                  
+                  onRefresh: ()=>planningPageStore.load());
+
+                }
+              )
+            );
+          }
+        );
+
       },
     );
   }
@@ -65,30 +88,26 @@ class _PlanningPageState extends State<PlanningPage> {
 class DayEventsWidget extends StatelessWidget {
   DayEventsWidget({
     Key key,
-    @required this.day,
-    @required this.eventsByHours,
+    @required this.store,
   }) : super(key: key){
-    this.hours = eventsByHours.keys.toList();
   }
 
-  final DateTime day;
-  final Map<DateTime, List<Event>> eventsByHours;
-  List<DateTime> hours;
+  final PlanningPageStore store;
   final DateFormat hourFormat = DateFormat("H:mm");
 
   @override
   Widget build(BuildContext context) {
-    if (hours.isEmpty)
+    if (store.hours.isEmpty)
       return Text("Aucun créneau disponible");
     return ListView.builder(
-      itemCount: hours.length,
+      itemCount: store.hours.length,
       itemBuilder: (context, index){
-        DateTime hour = hours[index];
+        DateTime hour = store.hours[index];
         return Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            HourEventsWidget(events: eventsByHours[hour], hour: hour),
+            HourEventsWidget(events: store.eventsByHours[hour], hour: hour),
           ],
         );
       }
@@ -148,6 +167,7 @@ class EventWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PlanningPageStore store = Provider.of(context);
     int rest = event.maxAttendees - event.totalAttendees;
     return InkWell(
       child: Card(
@@ -172,10 +192,11 @@ class EventWidget extends StatelessWidget {
           ),
         ),
       ),                
-      onTap: (){                  
+      onTap: () async{             
+        var b = await store.prepareBooking(event);     
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PrepareBookingPage(event: event))
+          MaterialPageRoute(builder: (context) => PrepareBookingPage(event: event, booking: b, store: store))
         );
       }
     );

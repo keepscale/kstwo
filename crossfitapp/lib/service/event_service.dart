@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:crossfitapp/planning/booking.dart';
 import 'package:crossfitapp/planning/event.dart';
 import 'package:crossfitapp/service/network_client.dart';
 import 'package:dio/dio.dart';
@@ -19,7 +20,7 @@ class EventService{
 
     if (response.statusCode == 200) {
       //List decode = (json.decode(response.data) as List);
-      List jsonData = response.data
+      List<Event> jsonData = response.data
                 .expand(
                   (databytype) => (databytype['events'] as List).map(
                     (dataevent) => Event.fromJson(dataevent, databytype["type"], databytype["color"])
@@ -27,13 +28,25 @@ class EventService{
                   .where((event) => event.type != EventType.PAST)
                 ).toList();
 
-      var eventToday = jsonData.where((event)=>event.startAt.difference(date).inDays == 0).toList();
+      var eventToday = jsonData.where((event)=>event.startAt.difference(date).inDays == 0 && event.startAt.day == date.day).toList();
 
-      return eventToday.length == 0 ? jsonData : eventToday;
+      return eventToday;
     } 
     else {
       throw Exception('Failed to load post');
     }
+    
+  }
+
+
+  Future<Booking> prepareBooking(Event event) async {
+
+    Response<dynamic> response = await _network.post("api/bookings", queryParameters: {'prepare':true}, data: {
+      'date': dateFormat.format(event.startAt),
+      'timeslotId': event.id
+    });
+
+    return Booking.fromJson(response.data);
     
   }
 }

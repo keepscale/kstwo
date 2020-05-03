@@ -79,15 +79,7 @@ class _CrossfitAppState extends State<CrossfitApp> {
                 new WidgetOption(
                   icon: Icon(Icons.event),
                   title: 'Planning',
-                  body: Consumer<EventService>(
-                    builder: (context, eventService, _) => 
-                      Provider(
-                        create: (_) => PlanningStore(eventService, DateTime.now()),
-                        child: Consumer<PlanningStore>(
-                          builder: (context, planningStore, _) => 
-                            PlanningPage(planningStore, widget.appStore)),
-                      )
-                  )
+                  body: PlanningPage(widget.appStore)
                 ),
                 new WidgetOption(
                   icon: Icon(Icons.trending_up),

@@ -2,46 +2,55 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
+import 'package:crossfitapp/planning/booking.dart';
 import 'package:crossfitapp/planning/event.dart';
 import 'package:crossfitapp/service/event_service.dart';
 import 'package:mobx/mobx.dart';
 
 part 'planning_store.g.dart';
 
-class PlanningStore = _PlanningStore with _$PlanningStore;
 
-abstract class _PlanningStore with Store{
+class PlanningPageStore = _PlanningPageStore with _$PlanningPageStore;
 
+abstract class _PlanningPageStore with Store{
 
   final EventService eventService;
-  _PlanningStore(this.eventService, this.startDate);
+  _PlanningPageStore(this.eventService, this.date);
 
   @observable
-  DateTime startDate;
+  bool isLoading;
 
   @observable
-  DateTime currenDate;
+  DateTime date;
 
   @observable
   ObservableList<Event> events = ObservableList<Event>();
-  
+
+  @computed
+  List<DateTime> get hours{
+    return eventsByHours.keys.toList();
+  }
   @computed
   Map<DateTime, List<Event>> get eventsByHours{
     Map<DateTime, List<Event>> eventsByHours = SplayTreeMap();
-    eventsByHours.addAll(groupBy(events, (e)=>e.startAt));
+    eventsByHours.addAll(groupBy(events.where((e)=>e.startAt.isAfter(DateTime.now())), (e)=>e.startAt));
     return eventsByHours;
   }
-
-  @action
-  Future<void> add(Duration duration) async {
-    currenDate = startDate.add(duration);
-    load();
-  }
-
+  
   @action
   Future<void> load() async {
+    isLoading = true;
     events.clear();
-    events.addAll(await this.eventService.getEvents(currenDate));
+    events.addAll(await this.eventService.getEvents(date));
+    isLoading = false;
+    
   }
+
+  
+  @action
+  Future<Booking> prepareBooking(Event event) async {
+    return this.eventService.prepareBooking(event);    
+  }
+
 
 }

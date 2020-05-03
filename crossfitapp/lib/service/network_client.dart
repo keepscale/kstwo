@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -21,7 +23,8 @@ class NetworkClient {
   }
 
   Future<Response<T>> get<T>(String path, {Map<String, dynamic> queryParameters}){
-    return _dio.get(path, queryParameters: queryParameters);
+    return new Future.delayed(const Duration(seconds: 0), () => 
+    _dio.get(path, queryParameters: queryParameters));
   }
 
   Future<Response<T>> post<T>(String path, {data, Map<String, dynamic> queryParameters}){
