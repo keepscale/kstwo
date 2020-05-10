@@ -19,7 +19,7 @@ class NetworkClient {
   NetworkClient(){
     _dio = new Dio(NetworkClient.options);
     _dio.interceptors.add(tokenInterceptor);
-    _dio.interceptors.add(LogInterceptor(request: false));
+    _dio.interceptors.add(LogInterceptor(request: false, requestHeader: false, requestBody: true, responseBody: true, responseHeader: false));
   }
 
   Future<Response<T>> get<T>(String path, {Map<String, dynamic> queryParameters}){

@@ -1,6 +1,6 @@
 
-import 'package:crossfitapp/planning/booking.dart';
-import 'package:crossfitapp/planning/event.dart';
+import 'package:crossfitapp/model/booking.dart';
+import 'package:crossfitapp/model/event.dart';
 import 'package:crossfitapp/store/planning_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -29,8 +29,10 @@ class PrepareBookingPage extends StatelessWidget {
               ListTile(
                 leading: Icon(event.timeslottype.icon),
                 title: Text(event.timeslottype.name),
-                subtitle: Text(dateFormat.format(event.startAt)),
+                trailing: Text(dateFormat.format(event.startAt)),                
               ),
+              Text(booking.error.message),
+              Column(children: booking.error.errors.expand((detail)=>detail.reasons.map((s)=>Text(s)).toList()).toList()),
               ButtonBarTheme( // make buttons use the appropriate styles for cards
                 child: ButtonBar(
                   children: <Widget>[

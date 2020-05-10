@@ -1,6 +1,7 @@
 
 
 import 'package:crossfitapp/common/hexcolor.dart';
+import 'package:crossfitapp/model/error.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,10 +13,11 @@ class Booking{
 
 
   final int id;
-  final DateTime date;
+  DateTime date;
   final int timeslotId;
   int subscriptionId;
 
+  ErrorMessage error;
 
 
   static  DateFormat dateFormat = DateFormat("yyyy-MM-dd");
@@ -23,10 +25,11 @@ class Booking{
   static Booking fromJson(data) {
     Booking e = Booking(
       id: data["id"],
-      date: dateFormat.parse(data['date']),
+      date: data['date'] != null ? dateFormat.parse(data['date']) : null,
       timeslotId: data["timeslotId"],
       subscriptionId: data["subscriptionId"],
     );
+    e.error = ErrorMessage.fromJson(data);
     return e;
   }
 }

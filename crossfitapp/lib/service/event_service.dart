@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:crossfitapp/planning/booking.dart';
-import 'package:crossfitapp/planning/event.dart';
+import 'package:crossfitapp/model/booking.dart';
+import 'package:crossfitapp/model/event.dart';
 import 'package:crossfitapp/service/network_client.dart';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
@@ -41,12 +41,17 @@ class EventService{
 
   Future<Booking> prepareBooking(Event event) async {
 
-    Response<dynamic> response = await _network.post("api/bookings", queryParameters: {'prepare':true}, data: {
-      'date': dateFormat.format(event.startAt),
-      'timeslotId': event.id
-    });
+    try{
 
-    return Booking.fromJson(response.data);
-    
+      Response<dynamic> response = await _network.post("api/bookings", queryParameters: {'prepare':true}, data: {
+        'date': dateFormat.format(event.startAt),
+        'timeslotId': event.id
+      });
+
+      return Booking.fromJson(response.data);
+
+    } on DioError catch(e) {
+      return Booking.fromJson(e.response.data);
+    }
   }
 }

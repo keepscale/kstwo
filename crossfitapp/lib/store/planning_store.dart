@@ -2,8 +2,8 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
-import 'package:crossfitapp/planning/booking.dart';
-import 'package:crossfitapp/planning/event.dart';
+import 'package:crossfitapp/model/booking.dart';
+import 'package:crossfitapp/model/event.dart';
 import 'package:crossfitapp/service/event_service.dart';
 import 'package:mobx/mobx.dart';
 
