@@ -196,7 +196,7 @@ class EventWidget extends StatelessWidget {
         var b = await store.prepareBooking(event);     
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PrepareBookingPage(event: event, booking: b, store: store))
+          MaterialPageRoute(builder: (context) => PrepareBookingPage(booking: store.preparedBooking))
         );
       }
     );

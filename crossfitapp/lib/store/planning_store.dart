@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:crossfitapp/planning/booking.dart';
 import 'package:crossfitapp/planning/event.dart';
 import 'package:crossfitapp/service/event_service.dart';
+import 'package:crossfitapp/store/booking_store.dart';
 import 'package:mobx/mobx.dart';
 
 part 'planning_store.g.dart';
@@ -25,6 +26,9 @@ abstract class _PlanningPageStore with Store{
 
   @observable
   ObservableList<Event> events = ObservableList<Event>();
+
+  @observable
+  BookingStore preparedBooking;
 
   @computed
   List<DateTime> get hours{
@@ -49,7 +53,12 @@ abstract class _PlanningPageStore with Store{
   
   @action
   Future<Booking> prepareBooking(Event event) async {
-    return this.eventService.prepareBooking(event);    
+    Booking b = await this.eventService.prepareBooking(event).then((booking){
+      booking.event = event;
+      return booking;
+    });
+    this.preparedBooking = BookingStore(b.event, b.date, b.timeslotId, b.subscriptionId);
+    return b;
   }
 
 

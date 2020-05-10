@@ -1,52 +1,72 @@
-
-import 'package:crossfitapp/planning/booking.dart';
-import 'package:crossfitapp/planning/event.dart';
-import 'package:crossfitapp/store/planning_store.dart';
+import 'package:crossfitapp/store/booking_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
 
 class PrepareBookingPage extends StatelessWidget {
-  PrepareBookingPage({Key key, this.event, this.booking, this.store}) : super(key: key);
+  PrepareBookingPage({Key key, this.booking}) : super(key: key);
 
-  final Event event;
-  final Booking booking;
-  final PlanningPageStore store;
+  final BookingStore booking;
   final DateFormat dateFormat = DateFormat("EEEEE dd 'à' HH:mm", "fr");
   
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text(event.timeslottype.name + " " +  dateFormat.format(event.startAt)),
+    return Observer(
+      builder: (_) => SafeArea(
+          child: Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: Text(booking.event.timeslottype.name + " " +  dateFormat.format(booking.event.startAt)),
+            ),
+            body: Card(          
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ListTile(
+                    leading: Icon(booking.event.timeslottype.icon),
+                    title: Text(booking.event.timeslottype.name),
+                    subtitle: Text(dateFormat.format(booking.event.startAt)),
+                  ),
+                  ButtonBarTheme( // make buttons use the appropriate styles for cards
+                    child: ButtonBar(
+                      children: <Widget>[
+                        Button(
+                          text: "Réserver", 
+                          onPressed: ()=> booking.book(), 
+                          visible: booking.isBookable),
+                        Button(
+                          text: "Annuler ma réservation", 
+                          onPressed: ()=> booking.cancel(), 
+                          visible: booking.isBooked),
+
+                      ],
+                    ), data: ButtonBarThemeData(),
+                  ),
+                ]
+              )
+            ),
+          ),
         ),
-        body: Card(          
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: Icon(event.timeslottype.icon),
-                title: Text(event.timeslottype.name),
-                subtitle: Text(dateFormat.format(event.startAt)),
-              ),
-              ButtonBarTheme( // make buttons use the appropriate styles for cards
-                child: ButtonBar(
-                  children: <Widget>[
-                    FlatButton(
-                      child: const Text("RESERVER"),
-                      onPressed: () { 
-                        Navigator.pop(context);
-                       },
-                    )
-                  ],
-                ), data: ButtonBarThemeData(),
-              ),
-            ]
-          )
+    );
+  }
+}
+
+class Button extends StatelessWidget {
+  final String text;
+  final Function onPressed;
+  final bool visible;
+
+  const Button({Key key, this.text, this.onPressed, this.visible}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+        child: FlatButton(
+          child: Text(text),
+          onPressed: onPressed,
         ),
-      ),
+        visible: visible,
     );
   }
 }

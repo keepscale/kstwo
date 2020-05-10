@@ -1,17 +1,15 @@
 
 
-import 'package:crossfitapp/common/hexcolor.dart';
-import 'package:enum_to_string/enum_to_string.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:crossfitapp/planning/event.dart';
 import 'package:intl/intl.dart';
 
 class Booking{
 
   Booking({this.id, this.date, this.timeslotId, this.subscriptionId});
 
+  Event event;
 
-  final int id;
+  int id;
   final DateTime date;
   final int timeslotId;
   int subscriptionId;
