@@ -1,5 +1,6 @@
 
-import 'package:crossfitapp/planning/event.dart';
+import 'package:crossfitapp/model/event.dart';
+import 'package:crossfitapp/model/error.dart';
 import 'package:mobx/mobx.dart';
 
 part 'booking_store.g.dart';
@@ -9,7 +10,7 @@ class BookingStore = _BookingStore with _$BookingStore;
 
 abstract class _BookingStore with Store{
 
-  _BookingStore(this.event, this.date, this.timeslotId, this.subscriptionId);
+  _BookingStore(this.event, this.date, this.timeslotId, this.subscriptionId, this.error);
 
   Event event;
 
@@ -24,6 +25,9 @@ abstract class _BookingStore with Store{
 
   @observable
   int subscriptionId;
+  
+  @observable
+  ErrorMessage error;
 
   @computed
   bool get isBooked => this.id != null;

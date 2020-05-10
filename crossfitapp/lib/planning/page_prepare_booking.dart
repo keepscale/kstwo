@@ -1,3 +1,4 @@
+import 'package:crossfitapp/model/error.dart';
 import 'package:crossfitapp/store/booking_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -28,6 +29,7 @@ class PrepareBookingPage extends StatelessWidget {
                     title: Text(booking.event.timeslottype.name),
                     subtitle: Text(dateFormat.format(booking.event.startAt)),
                   ),
+                  ErrorDetail(error: booking.error),
                   ButtonBarTheme( // make buttons use the appropriate styles for cards
                     child: ButtonBar(
                       children: <Widget>[
@@ -51,7 +53,23 @@ class PrepareBookingPage extends StatelessWidget {
     );
   }
 }
-
+class ErrorDetail extends StatelessWidget {
+  ErrorDetail({Key key, this.error}) : super(key: key);
+  ErrorMessage error;
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      child: 
+        Column(
+          children: <Widget>[
+            Text(error.message??""),
+            Column(children: error.errors.expand((detail)=>detail.reasons.map((s)=>Text(s)).toList()).toList()),
+          ],
+        ),
+      visible: error != null,
+    );
+  }
+}
 class Button extends StatelessWidget {
   final String text;
   final Function onPressed;

@@ -1,5 +1,5 @@
 
-import 'package:crossfitapp/planning/event.dart';
+import 'package:crossfitapp/model/event.dart';
 import 'package:crossfitapp/planning/page_prepare_booking.dart';
 import 'package:crossfitapp/service/event_service.dart';
 import 'package:crossfitapp/store/app_store.dart';

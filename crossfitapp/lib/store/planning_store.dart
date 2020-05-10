@@ -2,8 +2,8 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
-import 'package:crossfitapp/planning/booking.dart';
-import 'package:crossfitapp/planning/event.dart';
+import 'package:crossfitapp/model/booking.dart';
+import 'package:crossfitapp/model/event.dart';
 import 'package:crossfitapp/service/event_service.dart';
 import 'package:crossfitapp/store/booking_store.dart';
 import 'package:mobx/mobx.dart';
@@ -57,7 +57,7 @@ abstract class _PlanningPageStore with Store{
       booking.event = event;
       return booking;
     });
-    this.preparedBooking = BookingStore(b.event, b.date, b.timeslotId, b.subscriptionId);
+    this.preparedBooking = BookingStore(b.event, b.date, b.timeslotId, b.subscriptionId, b.error);
     return b;
   }
 

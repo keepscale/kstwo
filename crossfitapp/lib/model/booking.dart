@@ -1,6 +1,7 @@
 
 
-import 'package:crossfitapp/planning/event.dart';
+import 'package:crossfitapp/model/error.dart';
+import 'package:crossfitapp/model/event.dart';
 import 'package:intl/intl.dart';
 
 class Booking{
@@ -14,6 +15,7 @@ class Booking{
   final int timeslotId;
   int subscriptionId;
 
+  ErrorMessage error;
 
 
   static  DateFormat dateFormat = DateFormat("yyyy-MM-dd");
@@ -21,10 +23,11 @@ class Booking{
   static Booking fromJson(data) {
     Booking e = Booking(
       id: data["id"],
-      date: dateFormat.parse(data['date']),
+      date: data['date'] != null ? dateFormat.parse(data['date']) : null,
       timeslotId: data["timeslotId"],
       subscriptionId: data["subscriptionId"],
     );
+    e.error = ErrorMessage.fromJson(data);
     return e;
   }
 }
