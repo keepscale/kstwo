@@ -54,4 +54,10 @@ class EventService{
       return Booking.fromJson(e.response.data);
     }
   }
+
+  
+
+  Future<void> cancelBooking(int id) async {
+      Response<dynamic> response = await _network.delete("api/bookings/$id");
+  }
 }

@@ -57,7 +57,7 @@ abstract class _PlanningPageStore with Store{
       booking.event = event;
       return booking;
     });
-    this.preparedBooking = BookingStore(b.event, b.date, b.timeslotId, b.subscriptionId, b.error);
+    this.preparedBooking = BookingStore(this.eventService, b.id, b.event, b.date, b.timeslotId, b.subscriptionId, b.createdAt, b.error);
     return b;
   }
 

@@ -29,6 +29,7 @@ class PrepareBookingPage extends StatelessWidget {
                     title: Text(booking.event.timeslottype.name),
                     subtitle: Text(dateFormat.format(booking.event.startAt)),
                   ),
+                  Text("Vous êtes inscrit à ce créneau depuis le " + booking.createdAt.toString()),
                   ErrorDetail(error: booking.error),
                   ButtonBarTheme( // make buttons use the appropriate styles for cards
                     child: ButtonBar(

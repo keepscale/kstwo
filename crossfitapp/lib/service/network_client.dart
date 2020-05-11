@@ -30,6 +30,9 @@ class NetworkClient {
   Future<Response<T>> post<T>(String path, {data, Map<String, dynamic> queryParameters}){
     return _dio.post(path, data: data, queryParameters: queryParameters);
   }
+  Future<Response<T>> delete<T>(String path){
+    return _dio.delete(path);
+  }
 
   Future<void> logout() {
     return this.tokenInterceptor.clearToken();
