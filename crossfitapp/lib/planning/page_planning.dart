@@ -3,6 +3,7 @@ import 'package:crossfitapp/model/event.dart';
 import 'package:crossfitapp/planning/page_prepare_booking.dart';
 import 'package:crossfitapp/service/event_service.dart';
 import 'package:crossfitapp/store/app_store.dart';
+import 'package:crossfitapp/store/booking_store.dart';
 import 'package:crossfitapp/store/planning_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -89,8 +90,7 @@ class DayEventsWidget extends StatelessWidget {
   DayEventsWidget({
     Key key,
     @required this.store,
-  }) : super(key: key){
-  }
+  }) : super(key: key);
 
   final PlanningPageStore store;
   final DateFormat hourFormat = DateFormat("H:mm");
@@ -193,10 +193,10 @@ class EventWidget extends StatelessWidget {
         ),
       ),                
       onTap: () async{             
-        var b = await store.prepareBooking(event);     
+        BookingStore booking = await store.prepareBooking(event);     
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => PrepareBookingPage(booking: store.preparedBooking))
+          MaterialPageRoute(builder: (context) => PrepareBookingPage(booking: booking))
         );
       }
     );

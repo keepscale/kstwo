@@ -2,7 +2,6 @@
 import 'dart:collection';
 
 import 'package:collection/collection.dart';
-import 'package:crossfitapp/model/booking.dart';
 import 'package:crossfitapp/model/event.dart';
 import 'package:crossfitapp/service/event_service.dart';
 import 'package:crossfitapp/store/booking_store.dart';
@@ -27,9 +26,6 @@ abstract class _PlanningPageStore with Store{
   @observable
   ObservableList<Event> events = ObservableList<Event>();
 
-  @observable
-  BookingStore preparedBooking;
-
   @computed
   List<DateTime> get hours{
     return eventsByHours.keys.toList();
@@ -52,13 +48,11 @@ abstract class _PlanningPageStore with Store{
 
   
   @action
-  Future<Booking> prepareBooking(Event event) async {
-    Booking b = await this.eventService.prepareBooking(event).then((booking){
+  Future<BookingStore> prepareBooking(Event event) async {
+    return await this.eventService.prepareBooking(event).then((booking){
       booking.event = event;
-      return booking;
+      return BookingStore(this.eventService, booking);
     });
-    this.preparedBooking = BookingStore(this.eventService, b.id, b.event, b.date, b.timeslotId, b.subscriptionId, b.createdAt, b.error);
-    return b;
   }
 
 

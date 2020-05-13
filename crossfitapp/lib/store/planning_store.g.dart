@@ -72,24 +72,6 @@ mixin _$PlanningPageStore on _PlanningPageStore, Store {
     }, _$eventsAtom, name: '${_$eventsAtom.name}_set');
   }
 
-  final _$preparedBookingAtom =
-      Atom(name: '_PlanningPageStore.preparedBooking');
-
-  @override
-  BookingStore get preparedBooking {
-    _$preparedBookingAtom.context.enforceReadPolicy(_$preparedBookingAtom);
-    _$preparedBookingAtom.reportObserved();
-    return super.preparedBooking;
-  }
-
-  @override
-  set preparedBooking(BookingStore value) {
-    _$preparedBookingAtom.context.conditionallyRunInAction(() {
-      super.preparedBooking = value;
-      _$preparedBookingAtom.reportChanged();
-    }, _$preparedBookingAtom, name: '${_$preparedBookingAtom.name}_set');
-  }
-
   final _$loadAsyncAction = AsyncAction('load');
 
   @override
@@ -100,14 +82,14 @@ mixin _$PlanningPageStore on _PlanningPageStore, Store {
   final _$prepareBookingAsyncAction = AsyncAction('prepareBooking');
 
   @override
-  Future<Booking> prepareBooking(Event event) {
+  Future<BookingStore> prepareBooking(Event event) {
     return _$prepareBookingAsyncAction.run(() => super.prepareBooking(event));
   }
 
   @override
   String toString() {
     final string =
-        'isLoading: ${isLoading.toString()},date: ${date.toString()},events: ${events.toString()},preparedBooking: ${preparedBooking.toString()},hours: ${hours.toString()},eventsByHours: ${eventsByHours.toString()}';
+        'isLoading: ${isLoading.toString()},date: ${date.toString()},events: ${events.toString()},hours: ${hours.toString()},eventsByHours: ${eventsByHours.toString()}';
     return '{$string}';
   }
 }

@@ -5,7 +5,6 @@ import 'package:crossfitapp/service/auth_service.dart';
 import 'package:crossfitapp/service/event_service.dart';
 import 'package:crossfitapp/service/network_client.dart';
 import 'package:crossfitapp/store/app_store.dart';
-import 'package:crossfitapp/store/planning_store.dart';
 import 'package:crossfitapp/widget/login_widget.dart';
 import 'package:crossfitapp/widget/profile_widget.dart';
 import 'package:flutter/material.dart';

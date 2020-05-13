@@ -9,6 +9,26 @@ part of 'booking_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$BookingStore on _BookingStore, Store {
+  Computed<String> _$titleComputed;
+
+  @override
+  String get title =>
+      (_$titleComputed ??= Computed<String>(() => super.title)).value;
+  Computed<String> _$startAtComputed;
+
+  @override
+  String get startAt =>
+      (_$startAtComputed ??= Computed<String>(() => super.startAt)).value;
+  Computed<String> _$bookedAtComputed;
+
+  @override
+  String get bookedAt =>
+      (_$bookedAtComputed ??= Computed<String>(() => super.bookedAt)).value;
+  Computed<ErrorMessage> _$errorComputed;
+
+  @override
+  ErrorMessage get error =>
+      (_$errorComputed ??= Computed<ErrorMessage>(() => super.error)).value;
   Computed<bool> _$isBookedComputed;
 
   @override
@@ -20,72 +40,28 @@ mixin _$BookingStore on _BookingStore, Store {
   bool get isBookable =>
       (_$isBookableComputed ??= Computed<bool>(() => super.isBookable)).value;
 
-  final _$idAtom = Atom(name: '_BookingStore.id');
+  final _$bookingAtom = Atom(name: '_BookingStore.booking');
 
   @override
-  int get id {
-    _$idAtom.context.enforceReadPolicy(_$idAtom);
-    _$idAtom.reportObserved();
-    return super.id;
+  Observable<Booking> get booking {
+    _$bookingAtom.context.enforceReadPolicy(_$bookingAtom);
+    _$bookingAtom.reportObserved();
+    return super.booking;
   }
 
   @override
-  set id(int value) {
-    _$idAtom.context.conditionallyRunInAction(() {
-      super.id = value;
-      _$idAtom.reportChanged();
-    }, _$idAtom, name: '${_$idAtom.name}_set');
+  set booking(Observable<Booking> value) {
+    _$bookingAtom.context.conditionallyRunInAction(() {
+      super.booking = value;
+      _$bookingAtom.reportChanged();
+    }, _$bookingAtom, name: '${_$bookingAtom.name}_set');
   }
 
-  final _$dateAtom = Atom(name: '_BookingStore.date');
+  final _$cancelAsyncAction = AsyncAction('cancel');
 
   @override
-  DateTime get date {
-    _$dateAtom.context.enforceReadPolicy(_$dateAtom);
-    _$dateAtom.reportObserved();
-    return super.date;
-  }
-
-  @override
-  set date(DateTime value) {
-    _$dateAtom.context.conditionallyRunInAction(() {
-      super.date = value;
-      _$dateAtom.reportChanged();
-    }, _$dateAtom, name: '${_$dateAtom.name}_set');
-  }
-
-  final _$timeslotIdAtom = Atom(name: '_BookingStore.timeslotId');
-
-  @override
-  int get timeslotId {
-    _$timeslotIdAtom.context.enforceReadPolicy(_$timeslotIdAtom);
-    _$timeslotIdAtom.reportObserved();
-    return super.timeslotId;
-  }
-
-  @override
-  set timeslotId(int value) {
-    _$timeslotIdAtom.context.conditionallyRunInAction(() {
-      super.timeslotId = value;
-      _$timeslotIdAtom.reportChanged();
-    }, _$timeslotIdAtom, name: '${_$timeslotIdAtom.name}_set');
-  }
-
-  final _$subscriptionIdAtom = Atom(name: '_BookingStore.subscriptionId');
-
-  @override
-  int get subscriptionId {
-    _$subscriptionIdAtom.context.enforceReadPolicy(_$subscriptionIdAtom);
-    _$subscriptionIdAtom.reportObserved();
-    return super.subscriptionId;
-  }
-
-  @override
-  set subscriptionId(int value) {
-    _$subscriptionIdAtom.context.conditionallyRunInAction(() {
-      super.subscriptionId = value;
-      _$subscriptionIdAtom.reportChanged();
-    }, _$subscriptionIdAtom, name: '${_$subscriptionIdAtom.name}_set');
+  Future<void> cancel() {
+    return _$cancelAsyncAction.run(() => super.cancel());
   }
 
   final _$_BookingStoreActionController =
@@ -102,19 +78,9 @@ mixin _$BookingStore on _BookingStore, Store {
   }
 
   @override
-  void cancel() {
-    final _$actionInfo = _$_BookingStoreActionController.startAction();
-    try {
-      return super.cancel();
-    } finally {
-      _$_BookingStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     final string =
-        'id: ${id.toString()},date: ${date.toString()},timeslotId: ${timeslotId.toString()},subscriptionId: ${subscriptionId.toString()},isBooked: ${isBooked.toString()},isBookable: ${isBookable.toString()}';
+        'booking: ${booking.toString()},title: ${title.toString()},startAt: ${startAt.toString()},bookedAt: ${bookedAt.toString()},error: ${error.toString()},isBooked: ${isBooked.toString()},isBookable: ${isBookable.toString()}';
     return '{$string}';
   }
 }

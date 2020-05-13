@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:crossfitapp/model/booking.dart';
 import 'package:crossfitapp/model/event.dart';
@@ -58,6 +57,6 @@ class EventService{
   
 
   Future<void> cancelBooking(int id) async {
-      Response<dynamic> response = await _network.delete("api/bookings/$id");
+    return await _network.delete("api/bookings/$id");
   }
 }

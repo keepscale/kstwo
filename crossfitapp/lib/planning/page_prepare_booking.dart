@@ -3,13 +3,11 @@ import 'package:crossfitapp/store/booking_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:intl/intl.dart';
 
 class PrepareBookingPage extends StatelessWidget {
   PrepareBookingPage({Key key, this.booking}) : super(key: key);
 
   final BookingStore booking;
-  final DateFormat dateFormat = DateFormat("EEEEE dd 'à' HH:mm", "fr");
   
   @override
   Widget build(BuildContext context) {
@@ -18,18 +16,18 @@ class PrepareBookingPage extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               centerTitle: true,
-              title: Text(booking.event.timeslottype.name + " " +  dateFormat.format(booking.event.startAt)),
+              title: Text(booking.title),
             ),
             body: Card(          
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   ListTile(
-                    leading: Icon(booking.event.timeslottype.icon),
-                    title: Text(booking.event.timeslottype.name),
-                    subtitle: Text(dateFormat.format(booking.event.startAt)),
+                    leading: Icon(booking.booking.value.event.timeslottype.icon),
+                    title: Text(booking.booking.value.event.timeslottype.name),
+                    subtitle: Text(booking.startAt),
                   ),
-                  Text("Vous êtes inscrit à ce créneau depuis le " + booking.createdAt.toString()),
+                  Text(booking.isBooked ? booking.bookedAt : ""),
                   ErrorDetail(error: booking.error),
                   ButtonBarTheme( // make buttons use the appropriate styles for cards
                     child: ButtonBar(
@@ -56,7 +54,7 @@ class PrepareBookingPage extends StatelessWidget {
 }
 class ErrorDetail extends StatelessWidget {
   ErrorDetail({Key key, this.error}) : super(key: key);
-  ErrorMessage error;
+  final ErrorMessage error;
   @override
   Widget build(BuildContext context) {
     return Visibility(
