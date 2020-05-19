@@ -16,19 +16,21 @@ class PrepareBookingPage extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               centerTitle: true,
-              title: Text(booking.title),
+              title: Text("Réservation"),
             ),
             body: Card(          
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   ListTile(
-                    leading: Icon(booking.booking.value.event.timeslottype.icon),
-                    title: Text(booking.booking.value.event.timeslottype.name),
+                    leading: Icon(booking.event.timeslottype.icon),
+                    title: Text(booking.event.timeslottype.name),
                     subtitle: Text(booking.startAt),
+                    trailing: Text(booking.freePlacesStatus),
                   ),
-                  Text(booking.isBooked ? booking.bookedAt : ""),
                   ErrorDetail(error: booking.error),
+                  Visibility(child: Text(booking.bookedAt), visible: booking.isBooked),
+                  Visibility(child: Text("Vous serez prévenu lorsqu'une place se libérera."), visible: booking.hasSubscribeNotification),
                   ButtonBarTheme( // make buttons use the appropriate styles for cards
                     child: ButtonBar(
                       children: <Widget>[
@@ -36,6 +38,10 @@ class PrepareBookingPage extends StatelessWidget {
                           text: "Réserver", 
                           onPressed: ()=> booking.book(), 
                           visible: booking.isBookable),
+                        Button(
+                          text: "Me prévenir d'une place dispo.", 
+                          onPressed: ()=> booking.subscribeNotification(), 
+                          visible: booking.canSubscribeNotification),
                         Button(
                           text: "Annuler ma réservation", 
                           onPressed: ()=> booking.cancel(), 

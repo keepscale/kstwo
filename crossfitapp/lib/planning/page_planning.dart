@@ -43,7 +43,7 @@ class _PlanningPageState extends State<PlanningPage> {
       dayFormat.format(DateTime.now().add(Duration(days: index))));
   }
 
-  @override
+    @override
   Widget build(BuildContext context) {
     return PageView.builder(
       controller: _pageController,
@@ -188,16 +188,21 @@ class EventWidget extends StatelessWidget {
             ),
 
             subtitle: Text("$rest places disponibles", style: TextStyle(color: event.color)),
-            trailing: event.type == EventType.BOOKED ? Icon(Icons.star, size: 30.0, color: Colors.yellowAccent,) : Icon(Icons.keyboard_arrow_right, size: 30.0)
+            trailing: event.type == EventType.BOOKED ? 
+                Icon(Icons.check_circle_outline, size: 30.0) :
+              event.hasSubscribeNotif ? 
+                Icon(Icons.notifications, size: 30.0) :
+                Icon(Icons.keyboard_arrow_right, size: 30.0)
           ),
         ),
       ),                
       onTap: () async{             
         BookingStore booking = await store.prepareBooking(event);     
-        Navigator.push(
+        var r = await Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => PrepareBookingPage(booking: booking))
         );
+        store.load();
       }
     );
   }

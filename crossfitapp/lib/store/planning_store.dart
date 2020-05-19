@@ -50,8 +50,7 @@ abstract class _PlanningPageStore with Store{
   @action
   Future<BookingStore> prepareBooking(Event event) async {
     return await this.eventService.prepareBooking(event).then((booking){
-      booking.event = event;
-      return BookingStore(this.eventService, booking);
+      return BookingStore(this.eventService, event, booking);
     });
   }
 

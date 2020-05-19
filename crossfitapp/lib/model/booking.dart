@@ -1,14 +1,12 @@
 
 
 import 'package:crossfitapp/model/error.dart';
-import 'package:crossfitapp/model/event.dart';
+import 'package:crossfitapp/model/timeslot.dart';
 import 'package:intl/intl.dart';
 
 class Booking{
 
   Booking({this.id, this.date, this.timeslotId, this.subscriptionId, this.createdAt});
-
-  Event event;
 
   int id;
   final DateTime date;
@@ -18,6 +16,7 @@ class Booking{
 
   ErrorMessage error;
 
+  TimeSlotStatus timeSlotStatus;
 
   static  DateFormat dateFormat = DateFormat("yyyy-MM-dd");
   static  DateFormat dateTimeFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss");

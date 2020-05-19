@@ -44,6 +44,7 @@ class Event{
   final TimeSlotType timeslottype;
   EventType type;
   Color color;
+  bool hasSubscribeNotif;
   int totalAttendees;
   int maxAttendees;
 
@@ -54,70 +55,6 @@ class Event{
     return today;
   }
 
-
-  static Map<DateTime, Map<DateTime, List<Event>>> getTestData() {
-    DateTime today = getToday();
-    DateTime now = new DateTime(today.year, today.month, today.day, 8, 0, 0, 0, 0);
-    return {
-      today.add(Duration(days: 0)) : {
-        now.add(Duration(hours: 0)) : [
-          Event(startAt: now.add(Duration(hours: 0)), endAt: now.add(Duration(hours: 1)), timeslottype:TimeSlotType.openbox),
-          Event(startAt: now.add(Duration(hours: 0)), endAt: now.add(Duration(hours: 1)), timeslottype:TimeSlotType.conditionning),
-        ],
-        now.add(Duration(hours: 1)) : [
-          Event(startAt: now.add(Duration(hours: 1)), endAt: now.add(Duration(hours: 2)), timeslottype:TimeSlotType.openbox),
-          Event(startAt: now.add(Duration(hours: 1)), endAt: now.add(Duration(hours: 2)), timeslottype:TimeSlotType.wod),
-        ],
-        now.add(Duration(hours: 2)) : [
-          Event(startAt: now.add(Duration(hours: 2)), endAt: now.add(Duration(hours: 3)), timeslottype:TimeSlotType.openbox),
-        ],
-        now.add(Duration(hours: 3)) : [
-          Event(startAt: now.add(Duration(hours: 2)), endAt: now.add(Duration(hours: 3)), timeslottype:TimeSlotType.openbox),
-        ],
-        now.add(Duration(hours: 4, minutes: 30)) : [
-          Event(startAt: now.add(Duration(hours: 4)), endAt: now.add(Duration(hours: 5)), timeslottype:TimeSlotType.conditionning),
-        ],
-        now.add(Duration(hours: 6)) : [
-          Event(startAt: now.add(Duration(hours: 6)), endAt: now.add(Duration(hours: 7)), timeslottype:TimeSlotType.openbox),
-          Event(startAt: now.add(Duration(hours: 6)), endAt: now.add(Duration(hours: 7)), timeslottype:TimeSlotType.stamnia),
-          Event(startAt: now.add(Duration(hours: 6)), endAt: now.add(Duration(hours: 7)), timeslottype:TimeSlotType.conditionning),
-        ],
-        now.add(Duration(hours: 7)) : [
-          Event(startAt: now.add(Duration(hours: 7)), endAt: now.add(Duration(hours: 8)), timeslottype:TimeSlotType.wod),
-        ],
-      },      
-      today.add(Duration(days: 1)) : {
-        now.add(Duration(days: 1, hours: 0)) : [
-          Event(startAt: now.add(Duration(days: 1, hours: 0)), endAt: now.add(Duration(days: 1, hours: 1)), timeslottype:TimeSlotType.openbox),
-          Event(startAt: now.add(Duration(days: 1, hours: 0)), endAt: now.add(Duration(days: 1, hours: 1)), timeslottype:TimeSlotType.conditionning),
-        ],
-        now.add(Duration(days: 1, hours: 1)) : [
-          Event(startAt: now.add(Duration(days: 1, hours: 1)), endAt: now.add(Duration(days: 1, hours: 2)), timeslottype:TimeSlotType.openbox),
-          Event(startAt: now.add(Duration(days: 1, hours: 1)), endAt: now.add(Duration(days: 1, hours: 2)), timeslottype:TimeSlotType.wod),
-        ],
-      },      
-      today.add(Duration(days: 2)) : {
-        now.add(Duration(days: 2, hours: 0)) : [
-          Event(startAt: now.add(Duration(days: 2, hours: 0)), endAt: now.add(Duration(days: 2, hours: 1)), timeslottype:TimeSlotType.openbox),
-          Event(startAt: now.add(Duration(days: 2, hours: 0)), endAt: now.add(Duration(days: 2, hours: 1)), timeslottype:TimeSlotType.conditionning),
-        ],
-        now.add(Duration(days: 2, hours: 1)) : [
-          Event(startAt: now.add(Duration(days: 2, hours: 1)), endAt: now.add(Duration(days: 2, hours: 2)), timeslottype:TimeSlotType.openbox),
-          Event(startAt: now.add(Duration(days: 2, hours: 1)), endAt: now.add(Duration(days: 2, hours: 2)), timeslottype:TimeSlotType.wod),
-        ],
-      },      
-      today.add(Duration(days: 3)) : {
-        now.add(Duration(days: 3, hours: 0)) : [
-          Event(startAt: now.add(Duration(days: 3, hours: 0)), endAt: now.add(Duration(days: 3, hours: 1)), timeslottype:TimeSlotType.openbox),
-          Event(startAt: now.add(Duration(days: 3, hours: 0)), endAt: now.add(Duration(days: 3, hours: 1)), timeslottype:TimeSlotType.conditionning),
-        ],
-        now.add(Duration(days: 3, hours: 1)) : [
-          Event(startAt: now.add(Duration(days: 3, hours: 1)), endAt: now.add(Duration(days: 3, hours: 2)), timeslottype:TimeSlotType.openbox),
-          Event(startAt: now.add(Duration(days: 3, hours: 1)), endAt: now.add(Duration(days: 3, hours: 2)), timeslottype:TimeSlotType.wod),
-        ],
-      }
-    };
-  }
 
   static  DateFormat datetimeFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
@@ -134,6 +71,7 @@ class Event{
     e.title = data["name"];
     e.totalAttendees = data["totalAttendees"];
     e.maxAttendees = data["maxAttendees"];
+    e.hasSubscribeNotif = data["hasSubNotif"]??false;
     e.type = EnumToString.fromString(EventType.values, type);
     e.color = HexColor(color);
     return e;

@@ -24,6 +24,12 @@ mixin _$BookingStore on _BookingStore, Store {
   @override
   String get bookedAt =>
       (_$bookedAtComputed ??= Computed<String>(() => super.bookedAt)).value;
+  Computed<String> _$freePlacesStatusComputed;
+
+  @override
+  String get freePlacesStatus => (_$freePlacesStatusComputed ??=
+          Computed<String>(() => super.freePlacesStatus))
+      .value;
   Computed<ErrorMessage> _$errorComputed;
 
   @override
@@ -39,6 +45,18 @@ mixin _$BookingStore on _BookingStore, Store {
   @override
   bool get isBookable =>
       (_$isBookableComputed ??= Computed<bool>(() => super.isBookable)).value;
+  Computed<bool> _$canSubscribeNotificationComputed;
+
+  @override
+  bool get canSubscribeNotification => (_$canSubscribeNotificationComputed ??=
+          Computed<bool>(() => super.canSubscribeNotification))
+      .value;
+  Computed<bool> _$hasSubscribeNotificationComputed;
+
+  @override
+  bool get hasSubscribeNotification => (_$hasSubscribeNotificationComputed ??=
+          Computed<bool>(() => super.hasSubscribeNotification))
+      .value;
 
   final _$bookingAtom = Atom(name: '_BookingStore.booking');
 
@@ -68,7 +86,7 @@ mixin _$BookingStore on _BookingStore, Store {
       ActionController(name: '_BookingStore');
 
   @override
-  void book() {
+  Future<void> book() {
     final _$actionInfo = _$_BookingStoreActionController.startAction();
     try {
       return super.book();
@@ -78,9 +96,19 @@ mixin _$BookingStore on _BookingStore, Store {
   }
 
   @override
+  Future<void> subscribeNotification() {
+    final _$actionInfo = _$_BookingStoreActionController.startAction();
+    try {
+      return super.subscribeNotification();
+    } finally {
+      _$_BookingStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     final string =
-        'booking: ${booking.toString()},title: ${title.toString()},startAt: ${startAt.toString()},bookedAt: ${bookedAt.toString()},error: ${error.toString()},isBooked: ${isBooked.toString()},isBookable: ${isBookable.toString()}';
+        'booking: ${booking.toString()},title: ${title.toString()},startAt: ${startAt.toString()},bookedAt: ${bookedAt.toString()},freePlacesStatus: ${freePlacesStatus.toString()},error: ${error.toString()},isBooked: ${isBooked.toString()},isBookable: ${isBookable.toString()},canSubscribeNotification: ${canSubscribeNotification.toString()},hasSubscribeNotification: ${hasSubscribeNotification.toString()}';
     return '{$string}';
   }
 }

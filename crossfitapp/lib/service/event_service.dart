@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:crossfitapp/model/booking.dart';
 import 'package:crossfitapp/model/event.dart';
+import 'package:crossfitapp/model/timeslot.dart';
 import 'package:crossfitapp/service/network_client.dart';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
@@ -50,10 +51,29 @@ class EventService{
       return Booking.fromJson(response.data);
 
     } on DioError catch(e) {
-      return Booking.fromJson(e.response.data);
+      Booking b = Booking.fromJson(e.response.data);
+      b.timeSlotStatus = await timeSlotStatus(event);
+      return b;
     }
   }
 
+  
+  Future<void> book(Event event, int subscriptionId) {
+    return _network.post("api/bookings", data: {
+        'date': dateFormat.format(event.startAt),
+        'timeslotId': event.id,
+        'subscriptionId': subscriptionId
+      });
+  }
+
+  Future<TimeSlotStatus> timeSlotStatus(Event event){
+    return _network.get("api/bookings/${dateFormat.format(event.startAt)}/${event.id}/status")
+      .then((r)=>TimeSlotStatus.fromJson(r.data));
+  }
+
+  Future<void> subscribeNotification(Event event){
+    return _network.post("api/bookings/${dateFormat.format(event.startAt)}/${event.id}/subscribe");
+  }
   
 
   Future<void> cancelBooking(int id) async {
