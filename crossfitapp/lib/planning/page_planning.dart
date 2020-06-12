@@ -106,6 +106,13 @@ class _PlanningPageState extends State<PlanningPage> {
                                 ),
                               ),
                               Observer(builder: (_){
+                                
+                                if (planningPageStore.hours.length == 0 && !planningPageStore.isLoading ){
+                                  return SliverList(delegate: SliverChildListDelegate([
+                                    Center(child: Text("Aucun créneau disponible"))
+                                  ]));
+                                }
+
                                 return SliverList(
                                   delegate: SliverChildBuilderDelegate(
                                     (BuildContext context, int index) {
@@ -113,6 +120,7 @@ class _PlanningPageState extends State<PlanningPage> {
                                       DateTime hour = planningPageStore.hours[index];
                                       List<Event> events = planningPageStore.eventsByHours[hour];
                                       events.sort((a,b) => a.title.compareTo(b.title));
+
                                       return Container(
                                         child: Row(
                                             mainAxisAlignment: MainAxisAlignment.start,

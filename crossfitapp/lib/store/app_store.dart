@@ -28,6 +28,11 @@ abstract class _AppStore with Store{
 
   static ObservableFuture<User> noUser = ObservableFuture.value(null);
 
+  
+  @computed
+  bool get logginPending => user != noUser 
+    && user.status == FutureStatus.pending;
+
   @computed
   bool get loggedIn => user != noUser 
     && user.status == FutureStatus.fulfilled;

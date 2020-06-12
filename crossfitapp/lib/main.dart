@@ -74,8 +74,15 @@ class _CrossfitAppState extends State<CrossfitApp> {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: (!widget.appStore.loggedIn) ?
-              LoginWidget(widget.appStore) :              
+          home:
+              (widget.appStore.logginPending) ?
+
+              LoadingWidget() :
+
+              (!widget.appStore.loggedIn) ?
+              
+              LoginWidget(widget.appStore) :
+
               MainWidget(widget.appStore, [
                 new WidgetOption(
                   icon: Icon(Icons.event),
@@ -98,34 +105,19 @@ class _CrossfitAppState extends State<CrossfitApp> {
   }
 }
 
-/*
-class LoadingIndicator extends StatelessWidget {
-  const LoadingIndicator(this.appStore);
-
-  final App appStore;
-
+class LoadingWidget extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Observer(
-      builder: (_) => appStore.user.status == FutureStatus.pending
-          ? const LinearProgressIndicator()
-          : Container());
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text("Chargement en cours"),
+            CircularProgressIndicator(),
+          ],
+        ),
+      )
+    );
+  }
 }
-
-              return MainWidget(widgetOptions: [
-                new WidgetOption(
-                  icon: Icon(Icons.event),
-                  title: 'Planning',
-                  body: PlanningPage(startDate: Event.getToday(), user: user)
-                ),
-                new WidgetOption(
-                  icon: Icon(Icons.trending_up),
-                  title: 'Activités',
-                  body: new Text("Httlo")
-                ),
-                new WidgetOption(
-                  icon: Icon(Icons.account_circle),
-                  title: 'Profile',
-                  body: new Text("yopythyt")
-                )
-              ]);
-              */
