@@ -13,73 +13,71 @@ mixin _$PlanningPageStore on _PlanningPageStore, Store {
 
   @override
   List<DateTime> get hours =>
-      (_$hoursComputed ??= Computed<List<DateTime>>(() => super.hours)).value;
+      (_$hoursComputed ??= Computed<List<DateTime>>(() => super.hours,
+              name: '_PlanningPageStore.hours'))
+          .value;
   Computed<Map<DateTime, List<Event>>> _$eventsByHoursComputed;
 
   @override
   Map<DateTime, List<Event>> get eventsByHours => (_$eventsByHoursComputed ??=
-          Computed<Map<DateTime, List<Event>>>(() => super.eventsByHours))
+          Computed<Map<DateTime, List<Event>>>(() => super.eventsByHours,
+              name: '_PlanningPageStore.eventsByHours'))
       .value;
 
   final _$isLoadingAtom = Atom(name: '_PlanningPageStore.isLoading');
 
   @override
   bool get isLoading {
-    _$isLoadingAtom.context.enforceReadPolicy(_$isLoadingAtom);
-    _$isLoadingAtom.reportObserved();
+    _$isLoadingAtom.reportRead();
     return super.isLoading;
   }
 
   @override
   set isLoading(bool value) {
-    _$isLoadingAtom.context.conditionallyRunInAction(() {
+    _$isLoadingAtom.reportWrite(value, super.isLoading, () {
       super.isLoading = value;
-      _$isLoadingAtom.reportChanged();
-    }, _$isLoadingAtom, name: '${_$isLoadingAtom.name}_set');
+    });
   }
 
   final _$dateAtom = Atom(name: '_PlanningPageStore.date');
 
   @override
   DateTime get date {
-    _$dateAtom.context.enforceReadPolicy(_$dateAtom);
-    _$dateAtom.reportObserved();
+    _$dateAtom.reportRead();
     return super.date;
   }
 
   @override
   set date(DateTime value) {
-    _$dateAtom.context.conditionallyRunInAction(() {
+    _$dateAtom.reportWrite(value, super.date, () {
       super.date = value;
-      _$dateAtom.reportChanged();
-    }, _$dateAtom, name: '${_$dateAtom.name}_set');
+    });
   }
 
   final _$eventsAtom = Atom(name: '_PlanningPageStore.events');
 
   @override
   ObservableList<Event> get events {
-    _$eventsAtom.context.enforceReadPolicy(_$eventsAtom);
-    _$eventsAtom.reportObserved();
+    _$eventsAtom.reportRead();
     return super.events;
   }
 
   @override
   set events(ObservableList<Event> value) {
-    _$eventsAtom.context.conditionallyRunInAction(() {
+    _$eventsAtom.reportWrite(value, super.events, () {
       super.events = value;
-      _$eventsAtom.reportChanged();
-    }, _$eventsAtom, name: '${_$eventsAtom.name}_set');
+    });
   }
 
-  final _$loadAsyncAction = AsyncAction('load');
+  final _$loadAsyncAction = AsyncAction('_PlanningPageStore.load');
 
   @override
   Future<void> load() {
     return _$loadAsyncAction.run(() => super.load());
   }
 
-  final _$prepareBookingAsyncAction = AsyncAction('prepareBooking');
+  final _$prepareBookingAsyncAction =
+      AsyncAction('_PlanningPageStore.prepareBooking');
 
   @override
   Future<BookingStore> prepareBooking(Event event) {
@@ -88,8 +86,12 @@ mixin _$PlanningPageStore on _PlanningPageStore, Store {
 
   @override
   String toString() {
-    final string =
-        'isLoading: ${isLoading.toString()},date: ${date.toString()},events: ${events.toString()},hours: ${hours.toString()},eventsByHours: ${eventsByHours.toString()}';
-    return '{$string}';
+    return '''
+isLoading: ${isLoading},
+date: ${date},
+events: ${events},
+hours: ${hours},
+eventsByHours: ${eventsByHours}
+    ''';
   }
 }

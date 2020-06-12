@@ -12,70 +12,80 @@ mixin _$BookingStore on _BookingStore, Store {
   Computed<String> _$titleComputed;
 
   @override
-  String get title =>
-      (_$titleComputed ??= Computed<String>(() => super.title)).value;
+  String get title => (_$titleComputed ??=
+          Computed<String>(() => super.title, name: '_BookingStore.title'))
+      .value;
   Computed<String> _$startAtComputed;
 
   @override
-  String get startAt =>
-      (_$startAtComputed ??= Computed<String>(() => super.startAt)).value;
+  String get startAt => (_$startAtComputed ??=
+          Computed<String>(() => super.startAt, name: '_BookingStore.startAt'))
+      .value;
   Computed<String> _$bookedAtComputed;
 
   @override
   String get bookedAt =>
-      (_$bookedAtComputed ??= Computed<String>(() => super.bookedAt)).value;
+      (_$bookedAtComputed ??= Computed<String>(() => super.bookedAt,
+              name: '_BookingStore.bookedAt'))
+          .value;
   Computed<String> _$freePlacesStatusComputed;
 
   @override
   String get freePlacesStatus => (_$freePlacesStatusComputed ??=
-          Computed<String>(() => super.freePlacesStatus))
+          Computed<String>(() => super.freePlacesStatus,
+              name: '_BookingStore.freePlacesStatus'))
       .value;
   Computed<ErrorMessage> _$errorComputed;
 
   @override
   ErrorMessage get error =>
-      (_$errorComputed ??= Computed<ErrorMessage>(() => super.error)).value;
+      (_$errorComputed ??= Computed<ErrorMessage>(() => super.error,
+              name: '_BookingStore.error'))
+          .value;
   Computed<bool> _$isBookedComputed;
 
   @override
-  bool get isBooked =>
-      (_$isBookedComputed ??= Computed<bool>(() => super.isBooked)).value;
+  bool get isBooked => (_$isBookedComputed ??=
+          Computed<bool>(() => super.isBooked, name: '_BookingStore.isBooked'))
+      .value;
   Computed<bool> _$isBookableComputed;
 
   @override
   bool get isBookable =>
-      (_$isBookableComputed ??= Computed<bool>(() => super.isBookable)).value;
+      (_$isBookableComputed ??= Computed<bool>(() => super.isBookable,
+              name: '_BookingStore.isBookable'))
+          .value;
   Computed<bool> _$canSubscribeNotificationComputed;
 
   @override
   bool get canSubscribeNotification => (_$canSubscribeNotificationComputed ??=
-          Computed<bool>(() => super.canSubscribeNotification))
+          Computed<bool>(() => super.canSubscribeNotification,
+              name: '_BookingStore.canSubscribeNotification'))
       .value;
   Computed<bool> _$hasSubscribeNotificationComputed;
 
   @override
   bool get hasSubscribeNotification => (_$hasSubscribeNotificationComputed ??=
-          Computed<bool>(() => super.hasSubscribeNotification))
+          Computed<bool>(() => super.hasSubscribeNotification,
+              name: '_BookingStore.hasSubscribeNotification'))
       .value;
 
   final _$bookingAtom = Atom(name: '_BookingStore.booking');
 
   @override
   Observable<Booking> get booking {
-    _$bookingAtom.context.enforceReadPolicy(_$bookingAtom);
-    _$bookingAtom.reportObserved();
+    _$bookingAtom.reportRead();
     return super.booking;
   }
 
   @override
   set booking(Observable<Booking> value) {
-    _$bookingAtom.context.conditionallyRunInAction(() {
+    _$bookingAtom.reportWrite(value, super.booking, () {
       super.booking = value;
-      _$bookingAtom.reportChanged();
-    }, _$bookingAtom, name: '${_$bookingAtom.name}_set');
+    });
   }
 
-  final _$cancelAsyncAction = AsyncAction('cancel');
+  final _$cancelAsyncAction = AsyncAction('_BookingStore.cancel');
 
   @override
   Future<void> cancel() {
@@ -87,7 +97,8 @@ mixin _$BookingStore on _BookingStore, Store {
 
   @override
   Future<void> book() {
-    final _$actionInfo = _$_BookingStoreActionController.startAction();
+    final _$actionInfo =
+        _$_BookingStoreActionController.startAction(name: '_BookingStore.book');
     try {
       return super.book();
     } finally {
@@ -97,7 +108,8 @@ mixin _$BookingStore on _BookingStore, Store {
 
   @override
   Future<void> subscribeNotification() {
-    final _$actionInfo = _$_BookingStoreActionController.startAction();
+    final _$actionInfo = _$_BookingStoreActionController.startAction(
+        name: '_BookingStore.subscribeNotification');
     try {
       return super.subscribeNotification();
     } finally {
@@ -107,8 +119,17 @@ mixin _$BookingStore on _BookingStore, Store {
 
   @override
   String toString() {
-    final string =
-        'booking: ${booking.toString()},title: ${title.toString()},startAt: ${startAt.toString()},bookedAt: ${bookedAt.toString()},freePlacesStatus: ${freePlacesStatus.toString()},error: ${error.toString()},isBooked: ${isBooked.toString()},isBookable: ${isBookable.toString()},canSubscribeNotification: ${canSubscribeNotification.toString()},hasSubscribeNotification: ${hasSubscribeNotification.toString()}';
-    return '{$string}';
+    return '''
+booking: ${booking},
+title: ${title},
+startAt: ${startAt},
+bookedAt: ${bookedAt},
+freePlacesStatus: ${freePlacesStatus},
+error: ${error},
+isBooked: ${isBooked},
+isBookable: ${isBookable},
+canSubscribeNotification: ${canSubscribeNotification},
+hasSubscribeNotification: ${hasSubscribeNotification}
+    ''';
   }
 }

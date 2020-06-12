@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "433692810106",
+    "firebase_url": "https://crossfit-app-320a8.firebaseio.com",
+    "project_id": "crossfit-app-320a8",
+    "storage_bucket": "crossfit-app-320a8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433692810106:android:12c6861e32784e9643d4c3",
+        "android_client_info": {
+          "package_name": "com.keepscale.crossfitapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "433692810106-9fq3m81jkf5omv9c8f5459478ta29h8f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvGX7bFbFXqAnVQoQLPR9J886nIajg2-o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "433692810106-9fq3m81jkf5omv9c8f5459478ta29h8f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

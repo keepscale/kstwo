@@ -1,6 +1,7 @@
 
 import 'package:crossfitapp/common/main_widget.dart';
 import 'package:crossfitapp/planning/page_planning.dart';
+import 'package:crossfitapp/push/push_nofitications.dart';
 import 'package:crossfitapp/service/auth_service.dart';
 import 'package:crossfitapp/service/event_service.dart';
 import 'package:crossfitapp/service/network_client.dart';
@@ -13,7 +14,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
 void main(){    
-  
   initializeDateFormatting('fr_FR', null);
 
   runApp(App(NetworkClient()));
@@ -47,6 +47,7 @@ class App extends StatelessWidget {
 
 class CrossfitApp extends StatefulWidget {
 
+  PushNotificationsManager manager = new PushNotificationsManager();
   final AppStore appStore;
   CrossfitApp(this.appStore);
 
@@ -59,6 +60,7 @@ class _CrossfitAppState extends State<CrossfitApp> {
   @override
   void initState() {
     super.initState();
+    widget.manager.init();
     widget.appStore.fetchAccount();
   }
 

@@ -23,8 +23,16 @@ class PlanningPage extends StatefulWidget {
 
 class _PlanningPageState extends State<PlanningPage> {
   PageController _pageController;
+  PlanningPageStore _planningPageStore;
 
   final DateFormat dayFormat = DateFormat("EEEEE dd MMMM", "fr_FR");
+  final DateFormat hourFormat = DateFormat("HH:mm");
+
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
+
+  PageStorageKey _pageStoreKey = PageStorageKey("planning");
+
 
   @override
   void initState() {
@@ -39,120 +47,107 @@ class _PlanningPageState extends State<PlanningPage> {
   }
 
   void _onPageChanged(int index, BuildContext context){
-    widget.appStore.setAppBatTitle(
-      dayFormat.format(DateTime.now().add(Duration(days: index))));
+
   }
 
     @override
   Widget build(BuildContext context) {
-    return PageView.builder(
-      controller: _pageController,
-      onPageChanged: (index) => _onPageChanged(index, context),
-      itemCount: 14,      
-      itemBuilder: (context, index){
-        return Consumer<EventService>(
-          builder: (context, eventService, _){
-            return Provider(
-              create: (_){
-                var store = PlanningPageStore(eventService, DateTime.now().add(Duration(days: index)));
-                store.load();
-                return store;
-              },
-              child: Consumer<PlanningPageStore>(
-                builder: (context, planningPageStore, _){
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      child: PageView.builder(
+        controller: _pageController,
+        
+        onPageChanged: (index) => _onPageChanged(index, context),
+        itemCount: 14,      
+        itemBuilder: (context, index){
+          return Consumer<EventService>(
+            builder: (context, eventService, _){
+              return Provider(
+                create: (_){
+                  _planningPageStore = PlanningPageStore(eventService, DateTime.now().add(Duration(days: index)));
+                  _refreshIndicatorKey.currentState.show();
+                  return _planningPageStore;
+                },
+                child: Consumer<PlanningPageStore>(
+                  builder: (context, planningPageStore, _){
 
-                  return RefreshIndicator(
-                    child: Observer(builder: (_){
-                    if (planningPageStore.isLoading)
-                      return Container(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        alignment: Alignment.topCenter,
-                        child: const CircularProgressIndicator()
-                      );
-                    else 
-                      return DayEventsWidget(store: planningPageStore);
-                  }), 
-                  
-                  onRefresh: ()=>planningPageStore.load());
+                    return RefreshIndicator(
+                          onRefresh: ()=>planningPageStore.load(),
+                          child: CustomScrollView(
+                            key: _pageStoreKey,
+                            controller: planningPageStore.scrollController,
+                            slivers: <Widget>[
+                              ///First sliver is the App Bar
+                              SliverAppBar(
+                                ///Properties of app bar
+                                backgroundColor: Colors.white,
+                                floating: false,
+                                pinned: true,
+                                expandedHeight: 80.0,                                
+                                flexibleSpace: FlexibleSpaceBar(
+                                  centerTitle: true,                                  
+                                  title: Text(
+                                    dayFormat.format(DateTime.now().add(Duration(days: index))),
+                                    style: TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.bold,),
+                                  ),
+                                  background: Container(
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        top: BorderSide(
+                                          color: Colors.black26,
+                                          width: 1.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Observer(builder: (_){
+                                return SliverList(
+                                  delegate: SliverChildBuilderDelegate(
+                                    (BuildContext context, int index) {
 
-                }
-              )
-            );
-          }
-        );
-
-      },
-    );
-  }
-}
-
-class DayEventsWidget extends StatelessWidget {
-  DayEventsWidget({
-    Key key,
-    @required this.store,
-  }) : super(key: key);
-
-  final PlanningPageStore store;
-  final DateFormat hourFormat = DateFormat("H:mm");
-
-  @override
-  Widget build(BuildContext context) {
-    if (store.hours.isEmpty)
-      return Text("Aucun créneau disponible");
-    return ListView.builder(
-      itemCount: store.hours.length,
-      itemBuilder: (context, index){
-        DateTime hour = store.hours[index];
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            HourEventsWidget(events: store.eventsByHours[hour], hour: hour),
-          ],
-        );
-      }
-    );
-  }
-}
-
-class HourEventsWidget extends StatelessWidget {
-  HourEventsWidget({
-    Key key,
-    @required this.events,
-    @required this.hour,
-  }) : super(key: key);
-
-  final List<Event> events;
-  final DateTime hour;
-  final DateFormat hourFormat = DateFormat("HH:mm");
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.only(
-                top: 15.0,
-                bottom: 2.0
-              ),
-              child:  Text(
-                hourFormat.format(hour),
-              )
-            ),
-            ListView.builder(    
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: events.length,
-              itemBuilder: (BuildContext context, int index) {
-                return new EventWidget(event: events[index]);
-              }, 
-              shrinkWrap: true,
-              )
-          ]
-        ), 
-      )
+                                      DateTime hour = planningPageStore.hours[index];
+                                      List<Event> events = planningPageStore.eventsByHours[hour];
+                                      events.sort((a,b) => a.title.compareTo(b.title));
+                                      return Container(
+                                        child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              RotatedBox(quarterTurns: 3, child: Padding(
+                                                padding: EdgeInsets.all(5.0),
+                                                child:  Text(hourFormat.format(hour)),
+                                              )),
+                                              Expanded(
+                                                
+                                                child: Row(
+                                                  children:  events.map((e) => EventWidget(event: e)).toList(),),)
+                                            ],)
+                                          
+                                      );
+                                    },
+                                    childCount: planningPageStore.hours.length,
+                                    /// Set childCount to limit no.of items
+                                    /// childCount: 100,
+                                  ),
+                                );
+                              })
+                              
+                            ],
+                          ),
+                        );
+                      }
+                    )
+                );
+            }
+          );
+        }
+      ),
+      onRefresh: ()=>_planningPageStore.load(),
     );
   }
 }
@@ -169,41 +164,38 @@ class EventWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     PlanningPageStore store = Provider.of(context);
     int rest = event.maxAttendees - event.totalAttendees;
-    return InkWell(
-      child: Card(
-        elevation: 2.0,
-        child: Container(
-          child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            leading: Container(
-              padding: EdgeInsets.only(right: 12.0),
-              decoration: new BoxDecoration(
-                  border: new Border(
-                      right: new BorderSide(width: 1.0, color: Colors.white24))),
-              child: Icon(event.timeslottype.icon),
-            ),
-            title: Text(
-              event.title,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+    return Expanded(
+      child: InkWell(
+        child: Card(
+          elevation: 1.0,
+          color: event.type == EventType.BOOKED ? Colors.lightGreen[200] : Colors.white,
+          child: Container(
+            child: ListTile(
+              contentPadding: EdgeInsets.symmetric( horizontal: 10.0, vertical: 0),
+              title: Text(
+                event.title,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
 
-            subtitle: Text("$rest places disponibles", style: TextStyle(color: event.color)),
-            trailing: event.type == EventType.BOOKED ? 
-                Icon(Icons.check_circle_outline, size: 30.0) :
-              event.hasSubscribeNotif ? 
-                Icon(Icons.notifications, size: 30.0) :
-                Icon(Icons.keyboard_arrow_right, size: 30.0)
+              subtitle: Text(rest == 0 ? "Complet" : "$rest places", style: TextStyle(color: event.color)),
+              trailing: event.type == EventType.BOOKED ? 
+                  Icon(Icons.check_circle_outline, size: 20.0) :
+                event.hasSubscribeNotif ? 
+                  Icon(Icons.notifications, size: 20.0) :
+                  Icon(Icons.keyboard_arrow_right, size: 20.0)
+            ),
           ),
-        ),
-      ),                
-      onTap: () async{             
-        BookingStore booking = await store.prepareBooking(event);     
-        var r = await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PrepareBookingPage(booking: booking))
-        );
-        store.load();
-      }
+        ),                
+        onTap: () async{             
+          BookingStore booking = await store.prepareBooking(event);      
+          
+          var r = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PrepareBookingPage(booking: booking))
+          );
+          store.load();
+        }
+      ),
     );
   }
 }

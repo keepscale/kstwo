@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:crossfitapp/model/event.dart';
 import 'package:crossfitapp/service/event_service.dart';
 import 'package:crossfitapp/store/booking_store.dart';
+import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
 
 part 'planning_store.g.dart';
@@ -17,8 +18,11 @@ abstract class _PlanningPageStore with Store{
   final EventService eventService;
   _PlanningPageStore(this.eventService, this.date);
 
+
+  ScrollController scrollController = ScrollController(keepScrollOffset: true);
+
   @observable
-  bool isLoading;
+  bool isLoading = true;
 
   @observable
   DateTime date;
@@ -42,8 +46,7 @@ abstract class _PlanningPageStore with Store{
     isLoading = true;
     events.clear();
     events.addAll(await this.eventService.getEvents(date));
-    isLoading = false;
-    
+    return Future.delayed(Duration(milliseconds: 100)).then((value) => {isLoading=false});
   }
 
   

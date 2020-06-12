@@ -35,7 +35,7 @@ class MainWidget extends StatelessWidget  {
 
       return Scaffold(
         appBar: AppBar(
-          title: Text(appStore.appBarTitle == null ? opt.title : appStore.appBarTitle),
+          title: Text(opt.title),
         ),
         body: opt.body,
         bottomNavigationBar: BottomNavigationBar(
