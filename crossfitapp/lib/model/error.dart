@@ -6,8 +6,12 @@ class ErrorMessage{
   static ErrorMessage fromJson(data) {
     ErrorMessage e = new ErrorMessage();
     e.message = data['message'];
-    e.errors = (data['errors'] as List)??[].map(
-                  (edetail) => ErrorDetail(edetail['message'], (edetail['reasons'] as List).map((_)=>_.toString()).toList())
+    var errors = (data['errors'] as List)??[];
+    e.errors = errors.map(
+                  (edetail) => ErrorDetail(
+                    message: edetail['message'], 
+                    reasons: (edetail['reasons'] as List).map((_)=>_["message"].toString()).toList()
+                  )
                 ).toList();
     return e;
   }
@@ -18,5 +22,5 @@ class ErrorDetail{
   final String message;
   final List<String> reasons;
 
-  ErrorDetail(this.message, this.reasons);
+  ErrorDetail({this.message, this.reasons});
 }

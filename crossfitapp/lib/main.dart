@@ -1,10 +1,13 @@
 
+import 'package:crossfitapp/activite/page_activite.dart';
 import 'package:crossfitapp/common/main_widget.dart';
 import 'package:crossfitapp/planning/page_planning.dart';
 import 'package:crossfitapp/push/push_nofitications.dart';
 import 'package:crossfitapp/service/auth_service.dart';
+import 'package:crossfitapp/service/booking_service.dart';
 import 'package:crossfitapp/service/event_service.dart';
 import 'package:crossfitapp/service/network_client.dart';
+import 'package:crossfitapp/service/wod_result_service.dart';
 import 'package:crossfitapp/store/app_store.dart';
 import 'package:crossfitapp/widget/login_widget.dart';
 import 'package:crossfitapp/widget/profile_widget.dart';
@@ -31,6 +34,8 @@ class App extends StatelessWidget {
         Provider(create: (_)  =>  _networkClient),
         Provider(create: (_)  =>  AuthService(_networkClient)),
         Provider(create: (_)  =>  EventService(_networkClient)),
+        Provider(create: (_)  =>  BookingService(_networkClient)),
+        Provider(create: (_)  =>  WodResultService(_networkClient)),
       ],
       child: Consumer<AuthService>(
         builder: (context, authService, _) => 
@@ -92,7 +97,7 @@ class _CrossfitAppState extends State<CrossfitApp> {
                 new WidgetOption(
                   icon: Icon(Icons.trending_up),
                   title: 'Activités',
-                  body: new Text("Httlo")
+                  body: ActivitePage()
                 ),
                 new WidgetOption(
                   icon: Icon(Icons.account_circle),

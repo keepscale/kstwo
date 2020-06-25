@@ -24,7 +24,7 @@ class PrepareBookingPage extends StatelessWidget {
                 children: <Widget>[
                   ListTile(
                     leading: Icon(booking.event.timeslottype.icon),
-                    title: Text(booking.event.timeslottype.name),
+                    title: Text(booking.event.title),
                     subtitle: Text(booking.startAt),
                     trailing: Text(booking.freePlacesStatus),
                   ),

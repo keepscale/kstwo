@@ -1,5 +1,6 @@
 class User{
 
+  final int id;
   final String title;
   final String firstName;
   final String lastName;
@@ -10,11 +11,12 @@ class User{
   final String telephonNumber;
   final String email;
 
-  User({this.title, this.firstName, this.lastName, this.nickName, 
+  User({this.id, this.title, this.firstName, this.lastName, this.nickName, 
     this.address, this.zipCode, this.city, this.telephonNumber, this.email});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
+      id: json['id'],
       title: json['title'],
       firstName: json['firstName'],
       lastName: json['lastName'],

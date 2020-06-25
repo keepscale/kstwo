@@ -185,7 +185,7 @@ class EventWidget extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
 
-              subtitle: Text(rest == 0 ? "Complet" : "$rest places", style: TextStyle(color: event.color)),
+              subtitle: Text(rest <= 0 ? "Complet" : "$rest places", style: TextStyle(color: event.color)),
               trailing: event.type == EventType.BOOKED ? 
                   Icon(Icons.check_circle_outline, size: 20.0) :
                 event.hasSubscribeNotif ? 
