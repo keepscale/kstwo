@@ -85,13 +85,6 @@ abstract class _ActivitePageStore with Store{
     return Future.delayed(Duration(milliseconds: 100)).then((value) => {isLoading=false});
   }
 
-  @action
-  Future<void> loadDetail(Booking b) async {
-    List<Wod> wods = await this.wodResultService.findAllWodAtDateWithMyResult(b.date);
-    b.wods = wods;
-    this.booking.value = b;
-    return this.booking;
-  }
   
   @action
   Future<void> selectWod(int index) async{
@@ -135,7 +128,6 @@ abstract class _ActivitePageStore with Store{
     this.wodResult.totalLoadInKilo = totalLoadInKilo;
     this.wodResult.comments = comments;
     return this.wodResultService.save(this.wodResult).then((_)async{
-      loadDetail(this.booking.value);
     });
   }
 

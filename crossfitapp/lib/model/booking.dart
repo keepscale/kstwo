@@ -38,6 +38,9 @@ class Booking{
       createdAt: data['createdAt'] != null ? dateTimeFormat.parse(data['createdAt']) : null,
       title: data['title'] != null ? (data['title'] as String).replaceAll("'", "") : null,
     );
+    if (data["wods"]){
+      e.wods = data["wods"].map((e) => Wod.fromJson(e)).toList();
+    }
     e.error = ErrorMessage.fromJson(data);
     return e;
   }

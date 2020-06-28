@@ -229,13 +229,6 @@ mixin _$ActivitePageStore on _ActivitePageStore, Store {
     return _$loadMoreAsyncAction.run(() => super.loadMore());
   }
 
-  final _$loadDetailAsyncAction = AsyncAction('_ActivitePageStore.loadDetail');
-
-  @override
-  Future<void> loadDetail(Booking b) {
-    return _$loadDetailAsyncAction.run(() => super.loadDetail(b));
-  }
-
   final _$selectWodAsyncAction = AsyncAction('_ActivitePageStore.selectWod');
 
   @override

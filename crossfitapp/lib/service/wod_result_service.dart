@@ -12,6 +12,7 @@ class WodResultService{
 
   static final DateFormat dateFormat = DateFormat("yyyy-MM-dd");
 
+/*
   Future<List<Wod>> findAllWodAtDateWithMyResult(DateTime date) async {
 
     Response<List> response = await _network.get("/api/wod/" + dateFormat.format(date) + "/withMyResult");
@@ -23,7 +24,7 @@ class WodResultService{
       throw Exception('Failed to load post');
     }    
   }
-
+*/
   Future<List<WodResultRanking>> getRanking(Wod wod) async {    
     Response<List> response = await _network.get("/api/wod/${wod.id}/ranking");
 
