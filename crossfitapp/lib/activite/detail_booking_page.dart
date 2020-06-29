@@ -4,6 +4,7 @@ import 'package:crossfitapp/activite/detail_result_page.dart';
 import 'package:crossfitapp/model/booking.dart';
 import 'package:crossfitapp/model/wod.dart';
 import 'package:crossfitapp/store/activite_store.dart';
+import 'package:crossfitapp/store/result_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +14,7 @@ class DetailBookingPage extends StatefulWidget {
 
   DetailBookingPage({Key key, this.store}) : super(key: key);
 
-  final ActivitePageStore store;
+  final ResultStore store;
 
   @override
   _DetailBookingPageState createState() => _DetailBookingPageState();
@@ -66,7 +67,7 @@ class _DetailBookingPageState extends State<DetailBookingPage> with SingleTicker
 
                         ListTile(
                           title: Text(wod.score.toString()),
-                          subtitle: MyResult(result: wod.myresultAtDate, store: widget.store)
+                          subtitle: MyResult(result: wod.myresultAtDate)
                         ),
 
                         Divider(),
@@ -111,7 +112,7 @@ class _DetailBookingPageState extends State<DetailBookingPage> with SingleTicker
               ),
               floatingActionButton: FloatingActionButton(child: Icon(Icons.edit), onPressed: (){
 
-                this.widget.store.editWodResult();
+                this.widget.store.edit();
 
                 return Navigator.push(
                   context,
@@ -128,9 +129,8 @@ class _DetailBookingPageState extends State<DetailBookingPage> with SingleTicker
 }
 
 class MyResult extends StatelessWidget {
-  const MyResult({Key key, this.result, this.store}) : super(key: key);
+  const MyResult({Key key, this.result}) : super(key: key);
 
-  final ActivitePageStore store;
   final WodResult result;
 
   @override

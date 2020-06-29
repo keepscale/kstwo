@@ -1,21 +1,15 @@
 
 import 'package:crossfitapp/activite/detail_booking_page.dart';
 import 'package:crossfitapp/model/booking.dart';
-import 'package:crossfitapp/model/event.dart';
-import 'package:crossfitapp/model/wod.dart';
-import 'package:crossfitapp/planning/page_prepare_booking.dart';
 import 'package:crossfitapp/service/booking_service.dart';
-import 'package:crossfitapp/service/event_service.dart';
 import 'package:crossfitapp/service/wod_result_service.dart';
 import 'package:crossfitapp/store/activite_store.dart';
 import 'package:crossfitapp/store/app_store.dart';
-import 'package:crossfitapp/store/booking_store.dart';
-import 'package:crossfitapp/store/planning_store.dart';
+import 'package:crossfitapp/store/result_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
-import 'package:mobx/mobx.dart';
 import 'package:provider/provider.dart';
 
 class ActivitePage extends StatelessWidget {
@@ -95,22 +89,22 @@ class ActivitePage extends StatelessWidget {
                                       return Card(
                                           child: ListTile(
                                               title: Text(
-                                                booking.title,
+                                               dateFormat.format(booking.startAt),
                                                 style: TextStyle(fontWeight: FontWeight.bold),
                                               ),
-                                              subtitle: Text(dateFormat.format(booking.startAt)),
+                                              subtitle: Container(
+                                                height: 150,
+                                                child: ListView(
+                                                  children: booking.wods??[].map((e) => Text(e.description)).toList(),
+                                                ),
+                                              ),
                                               leading: Icon(Icons.check_circle),
                                               onTap:  () async{             
-                                                await activitePageStore.loadDetail(booking);
-                                                if (activitePageStore.booking.value.wods.length > 0){
-                                                  return Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(builder: (context) => DetailBookingPage(store: activitePageStore))
-                                                  );
-                                                }
-                                                else{
-
-                                                }
+                                                ResultStore store = await activitePageStore.editWodResult(index);
+                                                return Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(builder: (context) => DetailBookingPage(store: store))
+                                                );
                                               },
                                             ),
                                       );

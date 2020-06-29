@@ -1,6 +1,7 @@
 import 'package:crossfitapp/model/booking.dart';
 import 'package:crossfitapp/model/wod.dart';
 import 'package:crossfitapp/store/activite_store.dart';
+import 'package:crossfitapp/store/result_store.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -9,7 +10,7 @@ import 'package:mobx/mobx.dart';
 
 class DetailResultPage extends StatefulWidget {
 
-  final ActivitePageStore store;
+  final ResultStore store;
 
   DetailResultPage({Key key, this.store}) : super(key: key);
 
@@ -36,7 +37,7 @@ class _DetailResultPageState extends State<DetailResultPage> {
                     child: Text("Enregistrer", style: TextStyle(color: Colors.white),),
                     onPressed: (){
                       if (_formKey.currentState.validate()){
-                        this.widget.store.saveWodResult().then((value) =>  Navigator.pop(context));
+                        this.widget.store.save().then((value) =>  Navigator.pop(context));
                        
                       }
                     }
@@ -50,7 +51,7 @@ class _DetailResultPageState extends State<DetailResultPage> {
                     children: <Widget>[
                       
                       buildListTile(
-                        visible: widget.store.wodResult.wod.score == Score.FOR_TIME,
+                        visible: widget.store.currentWod.score == Score.FOR_TIME,
                         children: [
                           NumberFormField(value: widget.store.totalMinute, label: "Minutes", doubleValue: false,
                           onChanged: (value) => this.widget.store.totalMinute = value,),
@@ -58,7 +59,7 @@ class _DetailResultPageState extends State<DetailResultPage> {
                           onChanged: (value) => this.widget.store.totalSecond = value,),
                       ]),
                       buildListTile(
-                        visible: widget.store.wodResult.wod.score == Score.FOR_ROUNDS_REPS,
+                        visible: widget.store.currentWod.score == Score.FOR_ROUNDS_REPS,
                         children: [
                           NumberFormField(value: widget.store.totalCompleteRound, label: "Rounds", doubleValue: false,
                           onChanged: (value) => this.widget.store.totalCompleteRound = value,),
@@ -66,7 +67,7 @@ class _DetailResultPageState extends State<DetailResultPage> {
                           onChanged: (value) => this.widget.store.totalReps = value,),
                       ]),
                       buildListTile(
-                        visible: widget.store.wodResult.wod.score == Score.FOR_LOAD,
+                        visible: widget.store.currentWod.score == Score.FOR_LOAD,
                         children: [
                           NumberFormField(value: widget.store.totalLoadInKilo, label: "Charge total en Kg", doubleValue: true,
                           onChanged: (value) => this.widget.store.totalLoadInKilo = value,),
