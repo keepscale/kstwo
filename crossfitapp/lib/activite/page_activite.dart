@@ -83,33 +83,64 @@ class ActivitePage extends StatelessWidget {
                           SliverList(
                             delegate: SliverChildBuilderDelegate(
                                 (BuildContext context, int index) {
-                                  return Observer(
-                                    builder: (_) {
-                                      Booking booking = activitePageStore.pastBookings[index];
-                                      return Card(
-                                          child: ListTile(
-                                              title: Text(
-                                               dateFormat.format(booking.startAt),
-                                                style: TextStyle(fontWeight: FontWeight.bold),
-                                              ),
-                                              subtitle: Container(
-                                                height: 150,
-                                                child: ListView(
-                                                  children: booking.wods??[].map((e) => Text(e.description)).toList(),
+                                    Booking booking = activitePageStore.pastBookings[index];
+                                    return Card(
+                                        child: InkWell(
+                                          onTap:  () async{             
+                                            ResultStore store = await activitePageStore.editWodResult(index);
+                                            /*return Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => DetailBookingPage(store: store))
+                                            );*/
+                                          },
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              Expanded(
+                                                                                                child: ListTile(
+                                                  leading: Icon(Icons.check_circle),
+                                                  title: Text(
+                                                    dateFormat.format(booking.startAt),
+                                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                                  )
                                                 ),
                                               ),
-                                              leading: Icon(Icons.check_circle),
-                                              onTap:  () async{             
-                                                ResultStore store = await activitePageStore.editWodResult(index);
-                                                return Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(builder: (context) => DetailBookingPage(store: store))
-                                                );
-                                              },
-                                            ),
-                                      );
-                                    }
-                                  );
+                                              Expanded(
+                                                                                                child: DefaultTabController(
+                                                  length: 3,
+                                                  child: Expanded(
+                                                    child: Column(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: <Widget>[
+                                                        new Expanded(
+                                                          child: new TabBarView(
+                                                            children: <Widget>[
+                                                              new Text("Hello"),
+                                                              new Text("world"),
+                                                              new Text("Hi")
+                                                            ]
+                                                          ),
+                                                        ),
+                                                        new Container(
+                                                          color: Colors.blue,
+                                                          child: new TabBar(
+                                                            tabs: <Tab>[
+                                                              new Tab(icon: new Icon(Icons.arrow_forward)),
+                                                              new Tab(icon: new Icon(Icons.arrow_downward)),
+                                                              new Tab(icon: new Icon(Icons.arrow_back)),
+                                                            ]
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                    );
                                 },
                                 childCount: activitePageStore.pastBookings.length,
                             ),
