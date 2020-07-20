@@ -12,13 +12,15 @@ import 'package:crossfitapp/store/app_store.dart';
 import 'package:crossfitapp/widget/login_widget.dart';
 import 'package:crossfitapp/widget/profile_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n_delegate.dart';
+import 'package:flutter_i18n/loaders/network_file_translation_loader.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';   
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 
-void main(){    
-  initializeDateFormatting('fr_FR', null);
 
+Future<void> main() async {    
+  
   runApp(App(NetworkClient()));
 } 
 
@@ -29,22 +31,42 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider(create: (_)  =>  _networkClient),
-        Provider(create: (_)  =>  AuthService(_networkClient)),
-        Provider(create: (_)  =>  EventService(_networkClient)),
-        Provider(create: (_)  =>  BookingService(_networkClient)),
-        Provider(create: (_)  =>  WodResultService(_networkClient)),
+    return MaterialApp(
+      title: 'Flutter login UI',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      localizationsDelegates: [
+        
+        FlutterI18nDelegate(
+          translationLoader: NetworkFileTranslationLoader(baseUri: Uri.https("booking.crossfit-nancy.fr", "front-app/assets/i18n/"), useCountryCode: false),
+          missingTranslationHandler: (key, locale) {
+            print("--- Missing Key: $key, languageCode: ${locale.languageCode}");
+          }
+        ),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
       ],
-      child: Consumer<AuthService>(
-        builder: (context, authService, _) => 
-          Provider(
-            create: (_) => AppStore(authService),
-            child: Consumer<AppStore>(
-              builder: (context, appStore, _) => CrossfitApp(appStore)
-            )
-          ),
+      supportedLocales: [
+        Locale("fr")
+      ],
+      home: MultiProvider(
+        providers: [
+          Provider(create: (_)  =>  _networkClient),
+          Provider(create: (_)  =>  AuthService(_networkClient)),
+          Provider(create: (_)  =>  EventService(_networkClient)),
+          Provider(create: (_)  =>  BookingService(_networkClient)),
+          Provider(create: (_)  =>  WodResultService(_networkClient)),
+        ],
+        child: Consumer<AuthService>(
+          builder: (context, authService, _) => 
+            Provider(
+              create: (_) => AppStore(authService),
+              child: Consumer<AppStore>(
+                builder: (context, appStore, _) => CrossfitApp(appStore)
+              )
+            ),
+        )
       )
     );
   }
@@ -74,12 +96,7 @@ class _CrossfitAppState extends State<CrossfitApp> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        return MaterialApp(
-          title: 'Flutter login UI',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          home:
+        return 
               (widget.appStore.logginPending) ?
 
               LoadingWidget() :
@@ -104,8 +121,7 @@ class _CrossfitAppState extends State<CrossfitApp> {
                   title: 'Profile',
                   body: ProfileWidget(widget.appStore.user.value)
                 )
-              ])
-          );
+              ]);
         });
   }
 }

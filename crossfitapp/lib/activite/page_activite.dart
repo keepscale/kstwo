@@ -8,8 +8,10 @@ import 'package:crossfitapp/service/wod_result_service.dart';
 import 'package:crossfitapp/store/activite_store.dart';
 import 'package:crossfitapp/store/app_store.dart';
 import 'package:crossfitapp/store/result_store.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_i18n/widgets/I18nText.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -96,35 +98,39 @@ class ActivitePage extends StatelessWidget {
   }
 
   SliverList buildPastBooking(ActivitePageStore activitePageStore) {
-    return SliverList(
+    return SliverList(      
       delegate: SliverChildBuilderDelegate(
           (BuildContext context, int index) {
               Booking booking = activitePageStore.pastBookings[index];
-              return Card(
-                  child: InkWell(
-                    onTap:  () async{             
-                      ResultStore store = await activitePageStore.editWodResult(index);
-                      /*return Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => DetailBookingPage(store: store))
-                      );*/
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        ListTile(
-                          title: Text(
-                            booking.title,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                child: Card(
+                    elevation: 5,
+                    child: InkWell(
+                      onTap:  () async{             
+                        ResultStore store = await activitePageStore.editWodResult(index);
+                        /*return Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => DetailBookingPage(store: store))
+                        );*/
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          ListTile(
+                            title: Text(
+                              booking.title,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: Text(dateFormat.format(booking.startAt)),
+                            leading: Icon(Icons.check_circle)
                           ),
-                          subtitle: Text(dateFormat.format(booking.startAt)),
-                          leading: Icon(Icons.check_circle)
-                        ),
-                        WodsWidget(booking.wods)
-                      ],
+                          WodsWidget(booking.wods)
+                        ],
+                      )
                     )
-                  )
+                ),
               );
           },
           childCount: activitePageStore.pastBookings.length,
@@ -205,17 +211,81 @@ class _WodsTabWidgetState extends State<WodsTabWidget> with SingleTickerProvider
 }
 
 class WodWidget extends StatelessWidget {
-  const WodWidget(this.wod, {
-    Key key,
-  }) : super(key: key);
+  WodWidget(this.wod, {Key key,}) :
+    result = wod.myresultAtDate, super(key: key);
 
   final Wod wod;
+  final WodResult result;
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-        title: Text(this.wod.description),
-        subtitle: Text("${this.wod.myresultAtDate?.totalCompleteRound} Rounds et ${this.wod.myresultAtDate?.totalReps} reps"),
-      );
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children:[
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(child: Text("${this.wod.description.trim().replaceAll("\n\n\n", "\n\n")}"), padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),),
+                ],
+              ),
+            ),
+            Container(height:40, child: VerticalDivider( color: Colors.black)),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Visibility(child: Text("Pas de score disponible"),                               visible: result == null,),
+                  Visibility(child: I18nText("wod.score."+EnumToString.parse(this.wod.score)),     visible: result != null,),
+                  ScoreWidget({"min": result?.totalMinute, "sec": result?.totalSecond},            visible: result != null && this.wod.score == Score.FOR_TIME,),
+                  ScoreWidget({"tour(s)": result?.totalCompleteRound, "rép.": result?.totalReps},  visible: result != null && this.wod.score == Score.FOR_ROUNDS_REPS),
+                  ScoreWidget({"Kg": result?.totalLoadInKilo},                                     visible: result != null && result.totalLoadInKilo != null,),
+                ],
+              ),
+            )
+          ]
+        ),
+        Divider(color: Colors.black, height: 2,),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(child: IconButton(icon: Icon(Icons.thumb_up), onPressed: () {  },  color: Colors.green, padding:  EdgeInsets.zero,)),
+            Container(height:30, child: VerticalDivider( color: Colors.black), padding:  EdgeInsets.zero),
+            Expanded(child: IconButton(icon: Icon(Icons.comment), onPressed: () {  })),
+            Container(height:30, child: VerticalDivider( color: Colors.black), padding:  EdgeInsets.zero),
+            Expanded(child: IconButton(icon: Icon(Icons.edit), onPressed: () {  })),
+          ]
+        )
+      ],
+    );
+  }
+}
+
+class ScoreWidget extends StatelessWidget {
+  const ScoreWidget(this.map, {this.visible,  key}) : super(key: key);
+
+  final Map map;
+  final bool visible;
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: this.visible??true,
+      child: Container(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: this.map.entries.map((e) => Text("${e.value} ${e.key} ")).toList()
+        ),
+      ),
+    );
   }
 }
