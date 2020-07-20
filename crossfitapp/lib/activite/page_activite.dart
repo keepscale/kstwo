@@ -2,6 +2,7 @@
 import 'package:crossfitapp/activite/detail_booking_page.dart';
 import 'package:crossfitapp/model/booking.dart';
 import 'package:crossfitapp/model/wod.dart';
+import 'package:crossfitapp/planning/page_prepare_booking.dart';
 import 'package:crossfitapp/service/booking_service.dart';
 import 'package:crossfitapp/service/wod_result_service.dart';
 import 'package:crossfitapp/store/activite_store.dart';
@@ -110,10 +111,17 @@ class ActivitePage extends StatelessWidget {
                     },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Text( dateFormat.format(booking.startAt),
-                          style: TextStyle(fontWeight: FontWeight.bold) ),
-                        (booking?.wods?.length??0) > 0 ? Column(children: booking?.wods?.map((e) => WodResultWidget(e))?.toList()) : Text("Pas de wod")
+                        ListTile(
+                          title: Text(
+                            booking.title,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(dateFormat.format(booking.startAt)),
+                          leading: Icon(Icons.check_circle)
+                        ),
+                        WodsWidget(booking.wods)
                       ],
                     )
                   )
@@ -124,9 +132,80 @@ class ActivitePage extends StatelessWidget {
     );
   }
 }
+class WodsWidget extends StatelessWidget {
+  const WodsWidget(this.wods, {
+    Key key,
+  }) : super(key: key);
 
-class WodResultWidget extends StatelessWidget {
-  const WodResultWidget(this.wod, {
+  final List<Wod> wods;
+
+  @override
+  Widget build(BuildContext context) {
+    if ( (wods?.length??0) > 0 ){
+      return WodsTabWidget(wods);
+    }
+    else{
+      return ListTile(
+        title: Text("Pas de wod disponible"),
+      );
+    }
+  }
+}
+
+class WodsTabWidget extends StatefulWidget {
+  const WodsTabWidget(this.wods, {
+    Key key,
+  }) : super(key: key);
+
+  final List<Wod> wods;
+
+  @override
+  _WodsTabWidgetState createState() => _WodsTabWidgetState();
+}
+
+class _WodsTabWidgetState extends State<WodsTabWidget> with SingleTickerProviderStateMixin {
+  
+  TabController _tabController;
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    _tabController = TabController(length: this.widget.wods?.length, vsync: this);
+    _tabController.addListener(_handleTabSelection);
+    super.initState();
+  }
+  
+  _handleTabSelection() {
+    if (_tabController.indexIsChanging) {
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Visibility(
+          visible: _tabController.length > 1,
+          child: TabBar(
+              controller: _tabController,
+              labelColor: Colors.black,
+              tabs: widget.wods.map((e) => Tab(text:e.name)).toList()
+          ),
+        ),
+        WodWidget(widget.wods[_tabController.index])
+      ],
+    );
+  }
+}
+
+class WodWidget extends StatelessWidget {
+  const WodWidget(this.wod, {
     Key key,
   }) : super(key: key);
 
@@ -135,8 +214,8 @@ class WodResultWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(this.wod.description),
-      subtitle: Text("${this.wod.myresultAtDate?.totalCompleteRound} Rounds et ${this.wod.myresultAtDate?.totalReps} reps"),
-    );
+        title: Text(this.wod.description),
+        subtitle: Text("${this.wod.myresultAtDate?.totalCompleteRound} Rounds et ${this.wod.myresultAtDate?.totalReps} reps"),
+      );
   }
 }
