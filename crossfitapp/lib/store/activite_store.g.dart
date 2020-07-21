@@ -77,12 +77,18 @@ mixin _$ActivitePageStore on _ActivitePageStore, Store {
     return _$loadMoreAsyncAction.run(() => super.loadMore());
   }
 
-  final _$editWodResultAsyncAction =
-      AsyncAction('_ActivitePageStore.editWodResult');
+  final _$_ActivitePageStoreActionController =
+      ActionController(name: '_ActivitePageStore');
 
   @override
-  Future<ResultStore> editWodResult(int index) {
-    return _$editWodResultAsyncAction.run(() => super.editWodResult(index));
+  ResultStore editWodResult(Booking booking, Wod wod) {
+    final _$actionInfo = _$_ActivitePageStoreActionController.startAction(
+        name: '_ActivitePageStore.editWodResult');
+    try {
+      return super.editWodResult(booking, wod);
+    } finally {
+      _$_ActivitePageStoreActionController.endAction(_$actionInfo);
+    }
   }
 
   @override

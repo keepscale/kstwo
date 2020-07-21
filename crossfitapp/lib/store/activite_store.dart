@@ -63,9 +63,8 @@ abstract class _ActivitePageStore with Store{
 
   
   @action
-  Future<ResultStore> editWodResult(int index) async{
-    ResultStore store = new ResultStore(this.wodResultService, this.appStore);
-    store.booking.value =  this.pastBookings[index];
+  ResultStore editWodResult(Booking booking, Wod wod){
+    ResultStore store = new ResultStore(this.wodResultService, this.appStore, booking, wod);
     return store;
   }
   

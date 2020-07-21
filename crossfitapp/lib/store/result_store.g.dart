@@ -9,14 +9,6 @@ part of 'result_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$ResultStore on _ResultStore, Store {
-  Computed<Wod> _$currentWodComputed;
-
-  @override
-  Wod get currentWod =>
-      (_$currentWodComputed ??= Computed<Wod>(() => super.currentWod,
-              name: '_ResultStore.currentWod'))
-          .value;
-
   final _$isLoadingAtom = Atom(name: '_ResultStore.isLoading');
 
   @override
@@ -32,33 +24,18 @@ mixin _$ResultStore on _ResultStore, Store {
     });
   }
 
-  final _$bookingAtom = Atom(name: '_ResultStore.booking');
+  final _$likedAtom = Atom(name: '_ResultStore.liked');
 
   @override
-  Observable<Booking> get booking {
-    _$bookingAtom.reportRead();
-    return super.booking;
+  bool get liked {
+    _$likedAtom.reportRead();
+    return super.liked;
   }
 
   @override
-  set booking(Observable<Booking> value) {
-    _$bookingAtom.reportWrite(value, super.booking, () {
-      super.booking = value;
-    });
-  }
-
-  final _$currentWodIndexAtom = Atom(name: '_ResultStore.currentWodIndex');
-
-  @override
-  int get currentWodIndex {
-    _$currentWodIndexAtom.reportRead();
-    return super.currentWodIndex;
-  }
-
-  @override
-  set currentWodIndex(int value) {
-    _$currentWodIndexAtom.reportWrite(value, super.currentWodIndex, () {
-      super.currentWodIndex = value;
+  set liked(bool value) {
+    _$likedAtom.reportWrite(value, super.liked, () {
+      super.liked = value;
     });
   }
 
@@ -198,14 +175,25 @@ mixin _$ResultStore on _ResultStore, Store {
     });
   }
 
-  final _$selectWodAsyncAction = AsyncAction('_ResultStore.selectWod');
+  final _$loadRankingAsyncAction = AsyncAction('_ResultStore.loadRanking');
 
   @override
-  Future<void> selectWod(int index) {
-    return _$selectWodAsyncAction.run(() => super.selectWod(index));
+  Future<void> loadRanking() {
+    return _$loadRankingAsyncAction.run(() => super.loadRanking());
   }
 
   final _$_ResultStoreActionController = ActionController(name: '_ResultStore');
+
+  @override
+  Future<void> likeToggle() {
+    final _$actionInfo = _$_ResultStoreActionController.startAction(
+        name: '_ResultStore.likeToggle');
+    try {
+      return super.likeToggle();
+    } finally {
+      _$_ResultStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   Future<void> edit() {
@@ -233,8 +221,7 @@ mixin _$ResultStore on _ResultStore, Store {
   String toString() {
     return '''
 isLoading: ${isLoading},
-booking: ${booking},
-currentWodIndex: ${currentWodIndex},
+liked: ${liked},
 rankings: ${rankings},
 totalLoadInKilo: ${totalLoadInKilo},
 totalMinute: ${totalMinute},
@@ -243,8 +230,7 @@ totalCompleteRound: ${totalCompleteRound},
 totalReps: ${totalReps},
 category: ${category},
 division: ${division},
-comments: ${comments},
-currentWod: ${currentWod}
+comments: ${comments}
     ''';
   }
 }

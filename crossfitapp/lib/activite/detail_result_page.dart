@@ -1,12 +1,10 @@
-import 'package:crossfitapp/model/booking.dart';
 import 'package:crossfitapp/model/wod.dart';
-import 'package:crossfitapp/store/activite_store.dart';
 import 'package:crossfitapp/store/result_store.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
-import 'package:mobx/mobx.dart';
 
 class DetailResultPage extends StatefulWidget {
 
@@ -51,7 +49,7 @@ class _DetailResultPageState extends State<DetailResultPage> {
                     children: <Widget>[
                       
                       buildListTile(
-                        visible: widget.store.currentWod.score == Score.FOR_TIME,
+                        visible: widget.store.wod.score == Score.FOR_TIME,
                         children: [
                           NumberFormField(value: widget.store.totalMinute, label: "Minutes", doubleValue: false,
                           onChanged: (value) => this.widget.store.totalMinute = value,),
@@ -59,7 +57,7 @@ class _DetailResultPageState extends State<DetailResultPage> {
                           onChanged: (value) => this.widget.store.totalSecond = value,),
                       ]),
                       buildListTile(
-                        visible: widget.store.currentWod.score == Score.FOR_ROUNDS_REPS,
+                        visible: widget.store.wod.score == Score.FOR_ROUNDS_REPS,
                         children: [
                           NumberFormField(value: widget.store.totalCompleteRound, label: "Rounds", doubleValue: false,
                           onChanged: (value) => this.widget.store.totalCompleteRound = value,),
@@ -67,19 +65,21 @@ class _DetailResultPageState extends State<DetailResultPage> {
                           onChanged: (value) => this.widget.store.totalReps = value,),
                       ]),
                       buildListTile(
-                        visible: widget.store.currentWod.score == Score.FOR_LOAD,
+                        visible: true,
                         children: [
-                          NumberFormField(value: widget.store.totalLoadInKilo, label: "Charge total en Kg", doubleValue: true,
+                          NumberFormField(value: widget.store.totalLoadInKilo, label: "Charge en Kg", doubleValue: true,
                           onChanged: (value) => this.widget.store.totalLoadInKilo = value,),
                       ]),
                       
                       ListChoiceChip(label: "Classement", 
                         selected: this.widget.store.category, 
+                        i18n: "wod.category.",
                         values: Category.values, 
                         onChanged: (selected) => this.widget.store.category=selected,),
 
                       ListChoiceChip(label: "Division", 
                         selected: this.widget.store.division, 
+                        i18n: "wod.division.",
                         values: Division.values, 
                         onChanged: (selected) => this.widget.store.division=selected,),
                         
@@ -88,7 +88,7 @@ class _DetailResultPageState extends State<DetailResultPage> {
                           initialValue: this.widget.store.comments,
                           keyboardType: TextInputType.multiline,
                           decoration: InputDecoration(
-                            labelText: "Commentaire",
+                            labelText: "Note personnelle",
                           ),
                           maxLines: 2,
                           maxLength: 512,
@@ -119,10 +119,11 @@ class _DetailResultPageState extends State<DetailResultPage> {
 }
 
 class ListChoiceChip<T> extends StatelessWidget {
-  ListChoiceChip({Key key, this.label, this.selected, this.values, this.onChanged}) : super(key: key);
+  ListChoiceChip({Key key, this.label, this.selected, this.i18n, this.values, this.onChanged}) : super(key: key);
 
   String label;
   T selected;
+  String i18n;
   List<T> values;
   final ValueChanged<T> onChanged;
 
@@ -142,7 +143,7 @@ class ListChoiceChip<T> extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: values.map((e) => ChoiceChip(
-                label: Text("$e"), 
+                label: I18nText((this.i18n??"")+EnumToString.parse(e)), 
                 selected: this.selected == e,
                 onSelected: (bool selected) => selected ? onChanged(e) : '', )).toList(),
             ),

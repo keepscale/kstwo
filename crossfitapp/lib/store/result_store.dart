@@ -14,18 +14,17 @@ abstract class _ResultStore with Store{
   
   final WodResultService wodResultService;
   final AppStore appStore;
+  final Booking booking;
+  final Wod wod;
 
-  _ResultStore(this.wodResultService, this.appStore);
+  _ResultStore(this.wodResultService, this.appStore, this.booking, this.wod);
 
   @observable
   bool isLoading = true;
+
+  @observable
+  bool liked = false;
   
-  @observable
-  Observable<Booking> booking = Observable<Booking>(null);
-
-  @observable
-  int currentWodIndex = 0;
-
   @observable
   ObservableList<WodResultRanking> rankings = ObservableList<WodResultRanking>();
   
@@ -46,28 +45,27 @@ abstract class _ResultStore with Store{
   @observable
   String comments;
   
-  @computed
-  Wod get currentWod{
-    return booking.value.wods[this.currentWodIndex];
-  }
 
   @action
-  Future<void> selectWod(int index) async{
+  Future<void> loadRanking() async{
     isLoading = true;
-    this.currentWodIndex = index;
     rankings.clear();
-    rankings.addAll(await this.wodResultService.getRanking(this.currentWod));
-  
+    rankings.addAll(await this.wodResultService.getRanking(this.wod));  
     isLoading = false;
   }
 
   @action
+  Future<void> likeToggle(){
+    this.liked = !liked;
+  }
+
+  @action
   Future<void> edit() {
-    WodResult wodResult = this.currentWod.myresultAtDate;
+    WodResult wodResult = this.wod.myresultAtDate;
     if(wodResult == null){
       wodResult = new WodResult(
-        wod: this.currentWod,
-        date: booking.value.startAt,
+        wod: this.wod,
+        date: this.booking.startAt,
         category: Category.RX, 
         division: this.appStore.user.value.title == "MR" ? Division.MEN : Division.WOMEN
       );
@@ -84,22 +82,26 @@ abstract class _ResultStore with Store{
   }
 
   @action
-  Future<void> save() {
-    if (this.currentWod.myresultAtDate == null){
-      this.currentWod.myresultAtDate = new WodResult(
-        wod: this.currentWod,
-        date: booking.value.startAt,
+  Future<void> save() { 
+    WodResult wodResult = this.wod.myresultAtDate;
+    if (wodResult == null){
+      wodResult = new WodResult(
+        wod: this.wod,
+        date: booking.startAt,
       );
+      this.wod.myresultAtDate = wodResult;
     }
-    this.currentWod.myresultAtDate.category = category;
-    this.currentWod.myresultAtDate.division = division;
-    this.currentWod.myresultAtDate.totalMinute = totalMinute;
-    this.currentWod.myresultAtDate.totalSecond = totalSecond;
-    this.currentWod.myresultAtDate.totalCompleteRound = totalCompleteRound;
-    this.currentWod.myresultAtDate.totalReps = totalReps;
-    this.currentWod.myresultAtDate.totalLoadInKilo = totalLoadInKilo;
-    this.currentWod.myresultAtDate.comments = comments;
-    return this.wodResultService.save(this.currentWod.myresultAtDate).then((_)async{
+    wodResult.category = category;
+    wodResult.division = division;
+    wodResult.totalMinute = totalMinute;
+    wodResult.totalSecond = totalSecond;
+    wodResult.totalCompleteRound = totalCompleteRound;
+    wodResult.totalReps = totalReps;
+    wodResult.totalLoadInKilo = totalLoadInKilo;
+    wodResult.comments = comments;
+    
+    return this.wodResultService.save(wodResult).then((_){
+      this.loadRanking();
     });
   }
 }

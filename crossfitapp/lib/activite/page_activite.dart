@@ -1,5 +1,7 @@
 
 import 'package:crossfitapp/activite/detail_booking_page.dart';
+import 'package:crossfitapp/activite/detail_result_page.dart';
+import 'package:crossfitapp/activite/widget/wod_widget.dart';
 import 'package:crossfitapp/model/booking.dart';
 import 'package:crossfitapp/model/wod.dart';
 import 'package:crossfitapp/planning/page_prepare_booking.dart';
@@ -106,29 +108,20 @@ class ActivitePage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
                 child: Card(
                     elevation: 5,
-                    child: InkWell(
-                      onTap:  () async{             
-                        ResultStore store = await activitePageStore.editWodResult(index);
-                        /*return Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => DetailBookingPage(store: store))
-                        );*/
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ListTile(
-                            title: Text(
-                              booking.title,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            subtitle: Text(dateFormat.format(booking.startAt)),
-                            leading: Icon(Icons.check_circle)
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ListTile(
+                          title: Text(
+                            booking.title,
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          WodsWidget(booking.wods)
-                        ],
-                      )
+                          subtitle: Text(dateFormat.format(booking.startAt)),
+                          leading: Icon(Icons.check_circle)
+                        ),
+                        WodsWidget(booking)
+                      ],
                     )
                 ),
               );
@@ -139,16 +132,16 @@ class ActivitePage extends StatelessWidget {
   }
 }
 class WodsWidget extends StatelessWidget {
-  const WodsWidget(this.wods, {
+  const WodsWidget(this.booking, {
     Key key,
   }) : super(key: key);
 
-  final List<Wod> wods;
+  final Booking booking;
 
   @override
   Widget build(BuildContext context) {
-    if ( (wods?.length??0) > 0 ){
-      return WodsTabWidget(wods);
+    if ( (booking.wods?.length??0) > 0 ){
+      return WodsTabWidget(booking);
     }
     else{
       return ListTile(
@@ -159,10 +152,11 @@ class WodsWidget extends StatelessWidget {
 }
 
 class WodsTabWidget extends StatefulWidget {
-  const WodsTabWidget(this.wods, {
+  WodsTabWidget(this.booking, {
     Key key,
-  }) : super(key: key);
+  }) : this.wods = booking.wods, super(key: key);
 
+  final Booking booking;
   final List<Wod> wods;
 
   @override
@@ -204,87 +198,76 @@ class _WodsTabWidgetState extends State<WodsTabWidget> with SingleTickerProvider
               tabs: widget.wods.map((e) => Tab(text:e.name)).toList()
           ),
         ),
-        WodWidget(widget.wods[_tabController.index])
+        WodWidget(widget.booking, widget.wods[_tabController.index])
       ],
     );
   }
 }
 
 class WodWidget extends StatelessWidget {
-  WodWidget(this.wod, {Key key,}) :
+  WodWidget(this.booking, this.wod, {Key key,}) :
     result = wod.myresultAtDate, super(key: key);
 
+  final Booking booking;
   final Wod wod;
   final WodResult result;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children:[
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Container(child: Text("${this.wod.description.trim().replaceAll("\n\n\n", "\n\n")}"), padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),),
-                ],
-              ),
+    return Provider(      
+      create: (_){
+          ActivitePageStore store = Provider.of(context, listen: false);
+          return store.editWodResult(booking, wod);
+      },
+      child: Consumer<ResultStore >(
+        builder: (context, resultStore, _){
+          return InkWell(
+            onTap: () async {
+              resultStore.loadRanking();
+              return Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DetailBookingPage(resultStore))
+              );
+            },
+            child: Column(
+              children: [
+                WodDetailWidget(this.wod),
+
+                Divider(color: Colors.black, height: 2,),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Observer(builder: (_) => 
+                        Expanded(
+                          child: IconButton(icon: Icon(Icons.thumb_up),  
+                          color: resultStore.liked ? Colors.green : Colors.black, 
+                          padding:  EdgeInsets.zero, 
+                          onPressed: () { resultStore.likeToggle(); }
+                        )
+                      )
+                    ),
+                    Container(height:30, child: VerticalDivider( color: Colors.black), padding:  EdgeInsets.zero),
+                    Expanded(child: IconButton(icon: Icon(Icons.comment), onPressed: () {  })),
+                    Container(height:30, child: VerticalDivider( color: Colors.black), padding:  EdgeInsets.zero),
+                    Expanded(child: IconButton(icon: Icon(Icons.edit), onPressed: () async {
+                      
+                      ActivitePageStore store = Provider.of(context, listen: false);
+                      ResultStore resultStore = await store.editWodResult(booking, wod);
+                      resultStore.edit();
+                      
+                      return Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => DetailResultPage(store: resultStore))
+                      );                
+                    })),
+                  ]
+                )
+              ],
             ),
-            Container(height:40, child: VerticalDivider( color: Colors.black)),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Visibility(child: Text("Pas de score disponible"),                               visible: result == null,),
-                  Visibility(child: I18nText("wod.score."+EnumToString.parse(this.wod.score)),     visible: result != null,),
-                  ScoreWidget({"min": result?.totalMinute, "sec": result?.totalSecond},            visible: result != null && this.wod.score == Score.FOR_TIME,),
-                  ScoreWidget({"tour(s)": result?.totalCompleteRound, "rép.": result?.totalReps},  visible: result != null && this.wod.score == Score.FOR_ROUNDS_REPS),
-                  ScoreWidget({"Kg": result?.totalLoadInKilo},                                     visible: result != null && result.totalLoadInKilo != null,),
-                ],
-              ),
-            )
-          ]
-        ),
-        Divider(color: Colors.black, height: 2,),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Expanded(child: IconButton(icon: Icon(Icons.thumb_up), onPressed: () {  },  color: Colors.green, padding:  EdgeInsets.zero,)),
-            Container(height:30, child: VerticalDivider( color: Colors.black), padding:  EdgeInsets.zero),
-            Expanded(child: IconButton(icon: Icon(Icons.comment), onPressed: () {  })),
-            Container(height:30, child: VerticalDivider( color: Colors.black), padding:  EdgeInsets.zero),
-            Expanded(child: IconButton(icon: Icon(Icons.edit), onPressed: () {  })),
-          ]
-        )
-      ],
-    );
-  }
-}
-
-class ScoreWidget extends StatelessWidget {
-  const ScoreWidget(this.map, {this.visible,  key}) : super(key: key);
-
-  final Map map;
-  final bool visible;
-
-  @override
-  Widget build(BuildContext context) {
-    return Visibility(
-      visible: this.visible??true,
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: this.map.entries.map((e) => Text("${e.value} ${e.key} ")).toList()
-        ),
+          );
+        }
       ),
     );
   }
