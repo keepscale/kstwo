@@ -7,7 +7,7 @@ import 'package:mobx/mobx.dart';
 
 class WodResultRanking{
   
-  WodResultRanking({this.id, this.date, this.memberId, this.displayName, this.displayResult, this.title, this.category});
+  WodResultRanking({this.id, this.date, this.memberId, this.displayName, this.displayResult, this.loadInKilo, this.title, this.category});
 
   static  DateFormat dateFormat = DateFormat("yyyy-MM-dd");
 
@@ -16,8 +16,9 @@ class WodResultRanking{
   int memberId;
   String displayName;
   String displayResult;
+  double loadInKilo;
   String title;
-  String category;
+  Category category;
 
   static WodResultRanking fromJson(data) {
     WodResultRanking e = WodResultRanking(
@@ -26,8 +27,9 @@ class WodResultRanking{
       memberId: data["memberId"],
       displayName: data["displayName"],
       displayResult: data["displayResult"],
+      loadInKilo: data["loadInKilo"],
       title: data["title"],
-      category: data["category"],
+      category: EnumToString.fromString(Category.values, data['category'])  
     );
     return e;
   }
@@ -78,7 +80,7 @@ class WodResult{
 enum Score {FOR_TIME, FOR_ROUNDS_REPS, FOR_LOAD}
 
 enum WodCategory {BENCHMARK, QUALIFIER, GIRL, HEROES, CUSTOM}
-enum Category {RX, SCALED, NA}
+enum Category {RX, SCALED, CUSTOM}
 enum Division {WOMEN, MEN, TEAM}
 
 class Wod{

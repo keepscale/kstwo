@@ -32,7 +32,7 @@ class _DetailResultPageState extends State<DetailResultPage> {
                 title: Text("Modifier mon résultat"),
                 actions: <Widget>[
                   MaterialButton(
-                    child: Text("Enregistrer", style: TextStyle(color: Colors.white),),
+                    child: Text("Enregistrer", style: TextStyle(color: Colors.white, fontSize: 18),),
                     onPressed: (){
                       if (_formKey.currentState.validate()){
                         this.widget.store.save().then((value) =>  Navigator.pop(context));
@@ -141,7 +141,7 @@ class ListChoiceChip<T> extends StatelessWidget {
               ],
             ),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: values.map((e) => ChoiceChip(
                 label: I18nText((this.i18n??"")+EnumToString.parse(e)), 
                 selected: this.selected == e,

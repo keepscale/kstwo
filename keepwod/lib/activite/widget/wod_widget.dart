@@ -42,7 +42,7 @@ class WodDetailWidget extends StatelessWidget {
                 Visibility(child: I18nText("wod.score."+EnumToString.parse(this.wod.score)),     visible: result != null,),
                 ScoreWidget({"min": result?.totalMinute, "sec": result?.totalSecond},            visible: result != null && this.wod.score == Score.FOR_TIME,),
                 ScoreWidget({"tour(s)": result?.totalCompleteRound, "rép.": result?.totalReps},  visible: result != null && this.wod.score == Score.FOR_ROUNDS_REPS),
-                ScoreWidget({"Kg": result?.totalLoadInKilo},                                     visible: result != null && result.totalLoadInKilo != null,),
+                ScoreWidget({"à":FlutterI18n.translate(context, "wod.category."+EnumToString.parse(result.category)),"Kg": result?.totalLoadInKilo},                                     visible: result != null && result.totalLoadInKilo != null,),
               ],
             ),
           )
