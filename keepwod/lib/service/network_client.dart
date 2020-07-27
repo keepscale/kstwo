@@ -11,6 +11,10 @@ class NetworkClient {
       //baseUrl: "http://10.0.2.2:8080/",
       connectTimeout: 5000,
       receiveTimeout: 3000,
+      followRedirects: true,
+      validateStatus: (status) {
+        return status < 500;
+      },
   );
   
   Dio _dio;
@@ -19,7 +23,7 @@ class NetworkClient {
   NetworkClient(){
     _dio = new Dio(NetworkClient.options);
     _dio.interceptors.add(tokenInterceptor);
-    _dio.interceptors.add(LogInterceptor(request: false, requestHeader: false, requestBody: true, responseBody: true, responseHeader: false));
+    //_dio.interceptors.add(LogInterceptor(request: false, requestHeader: false, requestBody: true, responseBody: true, responseHeader: false));
   }
 
   Future<Response<T>> get<T>(String path, {Map<String, dynamic> queryParameters}){

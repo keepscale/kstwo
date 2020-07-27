@@ -11,7 +11,7 @@ class AuthService{
 
   Future<User> account() async {
     Response<Map> response = await _network.get("/api/account");
-    return User.fromJson(response.data);
+    return response.statusCode == 200 ? User.fromJson(response.data) : Future.value(null);
   }
 
   Future<Response> login({String email, String password}) async {

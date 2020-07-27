@@ -85,21 +85,21 @@ mixin _$AppStore on _AppStore, Store {
   final _$fetchAccountAsyncAction = AsyncAction('_AppStore.fetchAccount');
 
   @override
-  Future<User> fetchAccount() {
+  Future<void> fetchAccount() {
     return _$fetchAccountAsyncAction.run(() => super.fetchAccount());
   }
 
   final _$loginAsyncAction = AsyncAction('_AppStore.login');
 
   @override
-  Future<User> login(String username, String password) {
+  Future<void> login(String username, String password) {
     return _$loginAsyncAction.run(() => super.login(username, password));
   }
 
   final _$logoutAsyncAction = AsyncAction('_AppStore.logout');
 
   @override
-  Future<User> logout() {
+  Future<void> logout() {
     return _$logoutAsyncAction.run(() => super.logout());
   }
 

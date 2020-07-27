@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:keepwod/activite/page_activite.dart';
 import 'package:keepwod/common/main_widget.dart';
 import 'package:keepwod/planning/page_planning.dart';
@@ -15,7 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n_delegate.dart';
 import 'package:flutter_i18n/loaders/network_file_translation_loader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';   
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';   
 import 'package:provider/provider.dart';
 
 
@@ -84,13 +87,23 @@ class Keepwod extends StatefulWidget {
 
 class _Keepwodtate extends State<Keepwod> {
 
+  ReactionDisposer disposer;
+
   @override
   void initState() {
     super.initState();
     widget.manager.init();
     widget.appStore.fetchAccount();
+
+    disposer = reaction((_) => widget.appStore.user, (user){
+      log(user);
+    });
   }
 
+  @override
+  void dispose(){
+    this.disposer();
+  }
 
   @override
   Widget build(BuildContext context) {

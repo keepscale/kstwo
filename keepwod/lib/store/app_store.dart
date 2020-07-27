@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:keepwod/model/user.dart';
 import 'package:keepwod/service/auth_service.dart';
 import 'package:mobx/mobx.dart';
@@ -24,18 +26,16 @@ abstract class _AppStore with Store{
   }
 
   @observable 
-  ObservableFuture<User> user = noUser;
-
-  static ObservableFuture<User> noUser = ObservableFuture.value(null);
+  ObservableFuture<User> user =  ObservableFuture.value(null);
 
   
   @computed
-  bool get logginPending => user != noUser 
-    && user.status == FutureStatus.pending;
+  bool get logginPending => user.value != null && 
+    user.status == FutureStatus.pending;
 
   @computed
-  bool get loggedIn => user != noUser 
-    && user.status == FutureStatus.fulfilled;
+  bool get loggedIn => user.value != null &&
+    user.status == FutureStatus.fulfilled;
 
   @action
   Future<void> setAppBatTitle(String title) async {
@@ -43,26 +43,25 @@ abstract class _AppStore with Store{
   }
 
   @action
-  Future<User> fetchAccount() async {
-    
-    final future = authService.account();
-    user = ObservableFuture(future);
-
-    return await future;
+  Future<void> fetchAccount() async {    
+    user = ObservableFuture(authService.account());
   }
   
   @action
-  Future<User> login(String username, String password) async {
+  Future<void> login(String username, String password) async {
     
     await authService.logout();
 
     return authService
       .login(email: username, password: password)
-      .then((response) => fetchAccount());
+      .then((response){
+          fetchAccount();
+
+      });
   }
 
   @action
-  Future<User> logout() async {
+  Future<void> logout() async {
     
     return authService
       .logout()
