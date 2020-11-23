@@ -9,13 +9,12 @@ part of 'app_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$AppStore on _AppStore, Store {
-  Computed<bool> _$logginPendingComputed;
+  Computed<bool> _$pendingComputed;
 
   @override
-  bool get logginPending =>
-      (_$logginPendingComputed ??= Computed<bool>(() => super.logginPending,
-              name: '_AppStore.logginPending'))
-          .value;
+  bool get pending => (_$pendingComputed ??=
+          Computed<bool>(() => super.pending, name: '_AppStore.pending'))
+      .value;
   Computed<bool> _$loggedInComputed;
 
   @override
@@ -68,6 +67,21 @@ mixin _$AppStore on _AppStore, Store {
     });
   }
 
+  final _$boxAtom = Atom(name: '_AppStore.box');
+
+  @override
+  ObservableFuture<Box> get box {
+    _$boxAtom.reportRead();
+    return super.box;
+  }
+
+  @override
+  set box(ObservableFuture<Box> value) {
+    _$boxAtom.reportWrite(value, super.box, () {
+      super.box = value;
+    });
+  }
+
   final _$selectedAsyncAction = AsyncAction('_AppStore.selected');
 
   @override
@@ -80,6 +94,13 @@ mixin _$AppStore on _AppStore, Store {
   @override
   Future<void> setAppBatTitle(String title) {
     return _$setAppBatTitleAsyncAction.run(() => super.setAppBatTitle(title));
+  }
+
+  final _$fetchBoxAsyncAction = AsyncAction('_AppStore.fetchBox');
+
+  @override
+  Future<void> fetchBox() {
+    return _$fetchBoxAsyncAction.run(() => super.fetchBox());
   }
 
   final _$fetchAccountAsyncAction = AsyncAction('_AppStore.fetchAccount');
@@ -109,7 +130,8 @@ mixin _$AppStore on _AppStore, Store {
 appBarTitle: ${appBarTitle},
 selectedIndex: ${selectedIndex},
 user: ${user},
-logginPending: ${logginPending},
+box: ${box},
+pending: ${pending},
 loggedIn: ${loggedIn}
     ''';
   }
