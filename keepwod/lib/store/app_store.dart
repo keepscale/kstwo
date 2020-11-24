@@ -33,9 +33,8 @@ abstract class _AppStore with Store {
   ObservableFuture<Box> box = ObservableFuture.value(null);
 
   @computed
-  bool get pending =>
-      (user.value != null && user.status == FutureStatus.pending) ||
-      (box.value != null && box.status == FutureStatus.pending);
+  bool get userLoadPending =>
+      (user.value != null && user.status == FutureStatus.pending);
 
   @computed
   bool get loggedIn =>
@@ -57,13 +56,14 @@ abstract class _AppStore with Store {
   }
 
   @action
-  Future<void> login(String username, String password) async {
+  Future<bool> login(String username, String password) async {
     await authService.logout();
 
     return authService
         .login(email: username, password: password)
         .then((response) {
       fetchAccount();
+      return response.statusCode == 200;
     });
   }
 

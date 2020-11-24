@@ -9,12 +9,13 @@ part of 'app_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$AppStore on _AppStore, Store {
-  Computed<bool> _$pendingComputed;
+  Computed<bool> _$userLoadPendingComputed;
 
   @override
-  bool get pending => (_$pendingComputed ??=
-          Computed<bool>(() => super.pending, name: '_AppStore.pending'))
-      .value;
+  bool get userLoadPending =>
+      (_$userLoadPendingComputed ??= Computed<bool>(() => super.userLoadPending,
+              name: '_AppStore.userLoadPending'))
+          .value;
   Computed<bool> _$loggedInComputed;
 
   @override
@@ -113,7 +114,7 @@ mixin _$AppStore on _AppStore, Store {
   final _$loginAsyncAction = AsyncAction('_AppStore.login');
 
   @override
-  Future<void> login(String username, String password) {
+  Future<bool> login(String username, String password) {
     return _$loginAsyncAction.run(() => super.login(username, password));
   }
 
@@ -131,7 +132,7 @@ appBarTitle: ${appBarTitle},
 selectedIndex: ${selectedIndex},
 user: ${user},
 box: ${box},
-pending: ${pending},
+userLoadPending: ${userLoadPending},
 loggedIn: ${loggedIn}
     ''';
   }

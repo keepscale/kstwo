@@ -97,40 +97,22 @@ class _Keepwodtate extends State<Keepwod> {
   @override
   Widget build(BuildContext context) {
     return Observer(builder: (_) {
-      return (widget.appStore.pending)
-          ? LoadingWidget()
-          : (!widget.appStore.loggedIn)
-              ? LoginWidget(widget.appStore)
-              : MainWidget(widget.appStore, [
-                  new WidgetOption(
-                      icon: Icon(Icons.event),
-                      title: 'Planning',
-                      body: PlanningPage(widget.appStore)),
-                  new WidgetOption(
-                      icon: Icon(Icons.trending_up),
-                      title: 'Activités',
-                      body: ActivitePage()),
-                  new WidgetOption(
-                      icon: Icon(Icons.account_circle),
-                      title: 'Profile',
-                      body: ProfileWidget(widget.appStore.user.value))
-                ]);
+      return (!widget.appStore.loggedIn)
+          ? LoginWidget(widget.appStore)
+          : MainWidget(widget.appStore, [
+              new WidgetOption(
+                  icon: Icon(Icons.event),
+                  title: 'Planning',
+                  body: PlanningPage(widget.appStore)),
+              new WidgetOption(
+                  icon: Icon(Icons.trending_up),
+                  title: 'Activités',
+                  body: ActivitePage()),
+              new WidgetOption(
+                  icon: Icon(Icons.account_circle),
+                  title: 'Profile',
+                  body: ProfileWidget(widget.appStore.user.value))
+            ]);
     });
-  }
-}
-
-class LoadingWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text("Chargement en cours"),
-          CircularProgressIndicator(),
-        ],
-      ),
-    ));
   }
 }
