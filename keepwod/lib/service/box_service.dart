@@ -14,4 +14,11 @@ class BoxService {
         ? Box.fromJson(response.data)
         : Future.value(null);
   }
+
+  Future<List<Box>> getAll() async {
+    Response<List> response = await _network.get("/api/boxs");
+    return response.statusCode == 200
+        ? response.data.map((e) => Box.fromJson(e)).toList()
+        : Future.value(null);
+  }
 }

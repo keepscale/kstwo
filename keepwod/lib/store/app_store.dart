@@ -29,9 +29,6 @@ abstract class _AppStore with Store {
   @observable
   ObservableFuture<User> user = ObservableFuture.value(null);
 
-  @observable
-  ObservableFuture<Box> box = ObservableFuture.value(null);
-
   @computed
   bool get userLoadPending =>
       (user.value != null && user.status == FutureStatus.pending);
@@ -43,11 +40,6 @@ abstract class _AppStore with Store {
   @action
   Future<void> setAppBatTitle(String title) async {
     this.appBarTitle = title;
-  }
-
-  @action
-  Future<void> fetchBox() async {
-    box = ObservableFuture(boxService.get());
   }
 
   @action
