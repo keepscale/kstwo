@@ -1,4 +1,3 @@
-
 import 'package:keepwod/model/user.dart';
 import 'package:keepwod/store/app_store.dart';
 import 'package:flutter/material.dart';
@@ -13,29 +12,29 @@ class ProfileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppStore appStore = Provider.of(context);
-    return Observer(
-      builder: (_) { 
-        return Card(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.account_circle),
-                title: Text(user.title + " " + user.firstName + " " + user.lastName),
-                subtitle: Text(user.email),
-              ),
-              ButtonBar(
-                children: <Widget>[
-                  FlatButton(
-                    child: const Text('Se déconnecter'),
-                    onPressed: () { appStore.logout(); },
-                  )
-                ],
-              ),
-            ],
-          ),
-        );
-      }
-    );
+    return Observer(builder: (_) {
+      return Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.account_circle),
+              title: Text(user.firstName + " " + user.lastName),
+              subtitle: Text(user.email),
+            ),
+            ButtonBar(
+              children: <Widget>[
+                FlatButton(
+                  child: const Text('Se déconnecter'),
+                  onPressed: () {
+                    appStore.logout();
+                  },
+                )
+              ],
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

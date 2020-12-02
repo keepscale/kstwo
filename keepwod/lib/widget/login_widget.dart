@@ -46,8 +46,7 @@ class _LoginWidgetState extends State<LoginWidget> {
         this.email = emailController.value.text.trim();
         storage.write(key: "username", value: this.email);
       });
-    }
-    if (email.isNotEmpty && _formKey.currentState.validate()) {
+    } else if (email.isNotEmpty && _formKey.currentState.validate()) {
       setState(() {
         this.loginPending = true;
         this.errorMessage = "";
